@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "@kor-ui/kor": "^1.9.1",
+    "@mdi/font": "^6.5.95",
+    "@mdi/svg": "^6.5.95",
     "lit": "^2.0.2"
   },
   "devDependencies": {

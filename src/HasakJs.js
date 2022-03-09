@@ -1,15 +1,8 @@
 import { LitElement, html, css } from 'lit';
-const keyboard_arrow_down = '\u23f7';
-const keyboard_arrow_up = '\u23f5';
-import '@kor-ui/kor/components/icon';
-import '@kor-ui/kor/components/page';
-import '@kor-ui/kor/components/app-bar';
-import '@kor-ui/kor/components/tabs';
-import '@kor-ui/kor/components/drawer';
-import '@kor-ui/kor/components/pane';
-import '@kor-ui/kor/components/accordion';
+import './hasak-midi.js';
 
 export class HasakJs extends LitElement {
+
   static get properties() {
     return {
       title: { type: String },
@@ -56,38 +49,17 @@ export class HasakJs extends LitElement {
     this.title = 'hasak-js';
   }
 
+  midiCallback(midi) { this.midi = midi; }
+  
   render() {
     return html`
       <main>
-	<kor-page>
-	  <kor-app-bar slot="top" mobile label="hasak-js">
-	    <kor-icon slot="left" icon="menu" button
-	      onclick="document.querySelector("#left").visible = true"
-	    ></kor-icon>
-<!--	    <kor-tabs orient="horizontal">
-	      <kor-tab-item label="device" disabled></kor-tab-item>
-	      <kor-tab-item label="about"></kor-tab-item>
-	      <kor-tab-item label="colophon"></kor-tab-item>
-	    </kor-tabs> -->
-	  </kor-app-bar>
-	  <kor-drawer id="left" width="calc(100%-40px)">
-	    <kor-accordion label="hasak" disabled></kor-accordion>
-	    <kor-accordion label="about"></kor-accordion>
-	    <kor-accordion label="colophon"></kor-accordion>
-	  </kor-drawer>
-	  <kor-accordion label="hasak">
-	    <kor-accordion label="enables"></kor-accordion>
-	    <kor-accordion label="keyer"></kor-accordion>
-	    <kor-accordion label="ptt"></kor-accordion>
-	    <kor-accordion label="envelope"></kor-accordion>
-	    <kor-accordion label="levels"></kor-accordion>
-	    <kor-accordion label="mixers"></kor-accordion>
-	    <kor-accordion label="code"></kor-accordion>
-	    <kor-accordion label="commands"></kor-accordion>
-	  </kor-accordion>
-	  <kor-accordion label="about"></kor-accordion>
-	  <kor-accordion label="colophon"></kor-accordion>
-	</kor-page>
+	<div class="app-bar">
+	  <img src="../assets/keyer-logo-512x128.svg" alt="A keyer icon" style="width:96px;height:24px" />
+	  hasak-js
+	  <img src="../node_modules/@mdi/svg/svg/menu.svg" alt="A menu icon" style="width:24px;height:24px" />
+	</div>
+	<hasak-midi .app=${this}></hasak-midi>
       </main>
 
       <p class="app-footer">

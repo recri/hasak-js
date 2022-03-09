@@ -1,6 +1,6 @@
 //
 // hasak-js - a progressive web app for morse code
-// Copyright (c) 2020 Roger E Critchlow Jr, Charlestown, MA, USA
+// Copyright (c) 2022 Roger E Critchlow Jr, Charlestown, MA, USA
 //
 // MIT License
 //
@@ -25,6 +25,7 @@
 // SOFTWARE.
 //
 import { LitElement, html, css } from 'lit';
+// import './hasakStyles.js';
 
 /* eslint max-classes-per-file: "off" */
 
@@ -44,9 +45,11 @@ const checkedCheckBox = '\u2611';
 // a folder component
 // trying to pass a Boolean value is a problem, 
 // so treat true and false as strings
+// this is called Collapsible or Accordion
 //
+
 class UhFolder extends LitElement {
-  static get styles() { return css`${cwkeyerFolderStyles}\n${cwkeyerCommonStyles}` }
+  static get styles() { return css`` }
 
   // properties are reflected from html attributes
   static get properties() {
@@ -58,19 +61,18 @@ class UhFolder extends LitElement {
 
   connectedCallback() {
     super.connectedCallback()
-    this.ctl = cwkeyerProperties[this.control]
   }
 
   render() {
-    const pclass = this.ctl.level === 2 ? 'panel' : 'subpanel';
-    const hclass = `h${Math.max(6,this.ctl.level+1)}`;
+    const pclass = 'panel';
+    const hclass = `h6`;
     const marker = this.value === 'true' ? shownSymbol : hiddenSymbol;
     const dclass = `${pclass} group${this.value === 'true' ? '' : ' hidden'}`;
 
     return html`
 <div class="${pclass}" title="${this.ctl.title}">
   <button class="${hclass}" @click=${(e) => this._click(e)}>
-    ${marker} ${this.ctl.label}
+    ${marker} ${this.label}
   </button><slot name="header"></slot>
     <div class="${dclass}"><slot></slot></div>
 </div>`
@@ -87,7 +89,7 @@ customElements.define('uh-folder', UhFolder);
 // a numeric value slider input component
 //
 class UhSlider extends LitElement {
-  static get styles() { return css`${cwkeyerComponentStyles}\n${cwkeyerCommonStyles}` }
+  static get styles() { return css`` }
 
   static get properties() {
     return {
@@ -98,21 +100,20 @@ class UhSlider extends LitElement {
   
   connectedCallback() {
     super.connectedCallback()
-    this.ctl = cwkeyerProperties[this.control]
   }
 
   render() {
     return html`
-	<div class="chunk" title="${this.ctl.title}">
+	<div class="chunk" title="${this.title}">
 	  <input
 	    type="range"
 	    name="${this.control}" 
-	    min="${this.ctl.min}"
-	    max="${this.ctl.max}"
-	    step="${this.ctl.step}"
+	    min="${this.min}"
+	    max="${this.max}"
+	    step="${this.step}"
 	    .value=${this.value}
 	    @input=${(e) => this._input(e)}>
-	  <label for="${this.control}">${this.ctl.label} ${this.value} (${this.ctl.unit})</label>
+	  <label for="${this.control}">${this.label} ${this.value} (${this.unit})</label>
 	</div>
 	`;
   }
@@ -129,7 +130,8 @@ customElements.define('uh-slider', UhSlider);
 // a numeric value spinbox input component
 //
 class UhSpinner extends LitElement {
-  static get styles() { return css`${cwkeyerComponentStyles}\n${cwkeyerCommonStyles}` }
+
+  static get styles() { return css`` }
 
   static get properties() {
     return {
@@ -140,23 +142,22 @@ class UhSpinner extends LitElement {
 
   connectedCallback() {
     super.connectedCallback()
-    this.ctl = cwkeyerProperties[this.control]
   }
 
   render() {
       return html`
-	<div class="chunk" title="${this.ctl.title}">
-	  <label for="${this.control}">${this.ctl.label}
+	<div class="chunk" title="${this.title}">
+	  <label for="${this.control}">${this.label}
 	    <input
 	      type="number"
 	      name="${this.control}" 
-	      min="${this.ctl.min}"
-	      max="${this.ctl.max}"
-	      step="${this.ctl.step}"
-	      size="${this.ctl.size}"
+	      min="${this.min}"
+	      max="${this.max}"
+	      step="${this.step}"
+	      size="${this.size}"
 	      .value=${this.value}
 	      @input=${(e) => this._input(e)}>
-	    ${this.ctl.unit && this.ctl.unit !== '' ? `(${this.ctl.unit})` : ``}
+	    ${this.unit && this.unit !== '' ? `(${this.unit})` : ``}
 	  </label>
 	</div>
 	`;
@@ -179,7 +180,7 @@ customElements.define('uh-spinner', UhSpinner);
 //
 class UhOptions extends LitElement {
 
-  static get styles() { return css`${cwkeyerComponentStyles}\n${cwkeyerCommonStyles}` }
+  static get styles() { return css`` }
 
   static get properties() {
     return {
@@ -191,7 +192,6 @@ class UhOptions extends LitElement {
 
   connectedCallback() {
     super.connectedCallback()
-    this.ctl = cwkeyerProperties[this.control]
   }
 
   renderOption(x) {
@@ -205,8 +205,8 @@ class UhOptions extends LitElement {
 
   render() {
     return html`
-<label for="${this.control}" title="${this.ctl.title}">
-  ${this.ctl.label}
+<label for="${this.control}" title="${this.title}">
+  ${this.label}
   <select
       name="${this.control}"
       .value=${this.value} 
@@ -226,7 +226,7 @@ customElements.define('uh-options', UhOptions);
 
 class UhMultiple extends LitElement {
 
-  static get styles() { return css`${cwkeyerComponentStyles}\n${cwkeyerCommonStyles}` }
+  static get styles() { return css`` }
 
   static get properties() {
     return {
@@ -238,7 +238,6 @@ class UhMultiple extends LitElement {
 
   connectedCallback() {
     super.connectedCallback()
-    this.ctl = cwkeyerProperties[this.control]
   }
 
   renderOption(x) {
@@ -252,8 +251,8 @@ class UhMultiple extends LitElement {
 
   render() {
     return html`
-<label for="${this.control}" title="${this.ctl.title} multiple">
-  ${this.ctl.label}
+<label for="${this.control}" title="${this.title} multiple">
+  ${this.label}
   <select
       name="${this.control}"
       .value=${this.value} 
@@ -275,7 +274,7 @@ customElements.define('uh-multiple', UhMultiple);
 // a play/pause toggle input
 //
 class UhToggle extends LitElement {
-  static get styles() { return css`${cwkeyerComponentStyles}\n${cwkeyerCommonStyles}` }
+  static get styles() { return css`` }
 
   static get properties() {
     return {
@@ -286,18 +285,17 @@ class UhToggle extends LitElement {
 
   connectedCallback() {
     super.connectedCallback()
-    this.ctl = cwkeyerProperties[this.control]
   }
 
   render() {
     return html`
-	<div class="chunk" title="${this.ctl.title}"><label for="${this.control}">${this.ctl.label}
+	<div class="chunk" title="${this.title}"><label for="${this.control}">${this.label}
 	  <button
 	    name="${this.control}"
 	    role="switch" 
 	    aria-checked=${this.value} 
 	    @click=${(e) => this._click(e)}>
-	    ${this.value ? this.ctl.on : this.ctl.off}
+	    ${this.value ? this.on : this.off}
 	  </button></label></div>
 	`;
   }
@@ -314,7 +312,7 @@ customElements.define('uh-toggle', UhToggle);
 // a check box button component
 //
 class UhCheck extends LitElement {
-  static get styles() { return css`${cwkeyerComponentStyles}\n${cwkeyerCommonStyles}` }
+  static get styles() { return css`` }
 
   static get properties() {
     return {
@@ -325,16 +323,15 @@ class UhCheck extends LitElement {
 
   connectedCallback() {
     super.connectedCallback()
-    this.ctl = cwkeyerProperties[this.control]
   }
 
   render() {
       return html`
-	<div class="chunk" title="${this.ctl.title}"><button
+	<div class="chunk" title="${this.title}"><button
 	    role="switch" 
 	    aria-checked=${this.value} 
 	    @click=${(e) => this._click(e)}>
-	    ${this.value === "true" ? checkedCheckBox : uncheckedCheckBox} ${this.ctl.label}
+	    ${this.value === "true" ? checkedCheckBox : uncheckedCheckBox} ${this.label}
 	  </button></div>
 	`;
   }
