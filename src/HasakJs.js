@@ -50,6 +50,16 @@ export class HasakJs extends LitElement {
   }
 
   midiCallback(midi) { this.midi = midi; }
+
+  menuRender() {
+    if (this.midi) {
+      console.log(`this.midi = ${this.midi}`);
+      if (this.midi.devices) console.log(`this.midi.devices = ${this.midi.devices}`);
+      if (this.midi.dev) console.log(`this.midi.dev = ${this.midi.dev.keys().join(' ')}`);
+    }
+    // this.midi.devices.forEach(d => console.log(`${d}: ${this.midi.dev[d].views.keys().join(' ')}`));
+    return html``;
+  }
   
   render() {
     return html`
@@ -58,6 +68,7 @@ export class HasakJs extends LitElement {
 	  <img src="../assets/keyer-logo-512x128.svg" alt="A keyer icon" style="width:96px;height:24px" />
 	  hasak-js
 	  <img src="../node_modules/@mdi/svg/svg/menu.svg" alt="A menu icon" style="width:24px;height:24px" />
+	  <div class="menu">${this.menuRender()}</div>
 	</div>
 	<hasak-midi .app=${this}></hasak-midi>
       </main>

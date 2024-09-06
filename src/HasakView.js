@@ -7,26 +7,34 @@ export class HasakView extends LitElement {
 
   static get properties() {
     return {
-      view: { type: String },	// raw, complete, ...
       device: { type: Object },	// parent device
-      values: { type: Array }	// child values
+      props: { type: Object}, // property description object
+      view: { type: String },	// raw, complete, ...
+      values: { type: Object },	// child values
+      nNotes: { type: Number },	// number of notes
+      nCtrls: { type: Number },	// number of controls
+      nNrpns: { type: Number },	// number of nrpns
+      jsonEntries: { type: Array },
+      minEntries: { type: Array },
+      completeEntries: { type: Array }
     };
   }
 
   static get styles() {
     return css`
-`;
+    `;
   }
 
   constructor() {
     super();
     this.values = { note: {}, ctrl: {}, nrpn: {} };
+    this.props = null;
   }
   
   connectedCallback() {
     super.connectedCallback()
-    // console.log(`${this.name} calling back to ${this.midi} to name ourself as ${this}`);
-    this.device.viewCallback(this.name, this);
+    // console.log(`HasakView[${this.view}] calling back to HasakDevice[${this.device.name}] to name ourself`);
+    this.device.viewCallback(this.view, this);
   }
   
   valueCallback(type, tindex, value) {
@@ -34,43 +42,76 @@ export class HasakView extends LitElement {
     this.values[type][tindex] = value;
   }
 
+  get props() {
+    return this._props;
+  }
+  
+  set props(p) {
+    this._props = p;
+    this.nNotes = 128;
+    this.nCtrls = 120;
+    this.nNrpns = 300;
+    this.jsonEntries = [];
+    this.completeEntries = [];
+    this.minEntries = [];
+    if (p) {
+      this.nNotes = p.KYR_N_NOTES;
+      this.nCtrls = p.KYR_N_CTRLS;
+      this.nNrpns = p.KYR_N_NRPNS;
+      this.jsonEntries = Object.entries(p);
+      this.completeEntries = this.jsonEntries
+	.filter((k,v) => v.type === 'note' ||v.type === 'ctrl' || v.type === 'nrpn');
+      if (p.VAL_MIN_INTERFACE && p.VAL_MIN_INTERFACE.value)
+	this.minEntries = this.completeEntries
+	.filter((k,) => p.VAL_MIN_INTERFACE.value.includes(k))
+      else
+	this.minEntries = this.completeEntries
+      this.requestUpdate('props');
+    }
+  }
+
   render() {
+    // console.log(`HasakView[${this.device.name},${this.view}] in render with props ${this.props}`);
     switch(this.view) {
     case 'raw': {
-      const notes = Array.from(Array(128).keys());
-      const ctrls = Array.from(Array(120).keys());
-      const nrpns = Array.from(Array(300).keys());
       return html`
 	<div class="raw view">
-	  ${notes.forEach(note => html`<hasak-value .view=${this} type="note" tindex="${note}"></hasak-value>`)}
-	  ${ctrls.forEach(ctrl => html`<hasak-value .view=${this} type="ctrl" tindex="${ctrl}"></hasak-value>`)}
-	  ${nrpns.forEach(nrpn => html`<hasak-value .view=${this} type="nrpn" tindex="${nrpn}"></hasak-value>`)}
+	  <div class="view heading">Raw view</div>
+	  <div class="view subheading">Notes</div>
+	  ${[...Array(this.nNotes).keys()].map(note => html`<hasak-value .view=${this} type="note" tindex="${note}"></hasak-value>`)}
+	  <div class="view subheading">Ctrls</div>
+	  ${[...Array(this.nCtrls).keys()].map(ctrl => html`<hasak-value .view=${this} type="ctrl" tindex="${ctrl}"></hasak-value>`)}
+	  <div class="view subheading">Nrpns</div>
+	  ${[...Array(this.nNrpns).keys()].map(nrpn => html`<hasak-value .view=${this} type="nrpn" tindex="${nrpn}"></hasak-value>`)}
 	</div>`;
     }
-    case 'min': 
+    case 'min':
       return html`
-	<div class="min view">
-	</div>
-      `;
-    case 'json': {
-      const entries = this.device.properties && 
-	    Object.entries(this.device.properties);
+	${ ! this.minEntries ? html`` :
+	  html`
+	    <div class="min view">
+	      <div class="view heading">Min View</div>
+	      ${this.minEntries.forEach((key,value) => html`<hasak-value .view=${this} .property=${value} key="${key}"></hasak-value>`)}
+	    </div>
+	  `}`;
+    case 'json': 
       return html`
-	<div class="json view">
-	  ${entries.forEach((key, value) => html`<hasak-json-value .view=${this} .property=${value} key="${key}"></hasak-json-value>`)}
-	</div>
-      `;
-    }
-    case 'complete': {
-      const entries = this.device.properties && 
-	    Object.entries(this.device.properties)
-	    .filter((k,v) => v.type === 'note' ||v.type === 'ctrl' || v.type === 'nrpn')
+        ${ ! this.jsonEntries ? html`` :
+	  html`
+	    <div class="json view">
+	      <div class="view heading">Json View</div>
+	      ${this.jsonEntries.forEach((key,value) => html`<hasak-value .view=${this} .property=${value} key="${key}"></hasak-value>`)}
+	    </div>
+	  `}`;
+    case 'complete': 
       return html`
-	<div class="complete view">
-	  ${entries.forEach((key, value) => html`<hasak-value .view=${this} .property=${value} key="${key}"></hasak-value>`)}
-	</div>
-      `;
-    }
+        ${ ! this.completeEntries ? html`` :
+	  html`
+	    <div class="complete view">
+	      <div class="view heading">Complete View</div>
+	      ${this.completeEntries.forEach((key,value) => html`<hasak-value .view=${this} .property=${value} key="${key}"></hasak-value>`)}
+	    </div>
+	  `}`;
     default:
       return html``;
     }

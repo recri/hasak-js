@@ -55,6 +55,11 @@ export class HasakMidi extends LitElement {
     this.app.midiCallback(this);
   }
   
+  disconnectedCallback() {
+    super.disconnectedCallback()
+    this.app.midiCallback(null);
+  }
+    
   deviceCallback(name, dev) { 
     // console.log(`deviceCallback(${name}, ${dev})`);
     // don't update yet until we get the <hasak-device> to display
@@ -111,7 +116,7 @@ export class HasakMidi extends LitElement {
     });
     this.outputs.forEach(output => this.recordOutput(output.name, output.id));
     this.devices = Object.keys(this.dev)
-    this.requestUpdate(this.devices, []);
+    // this.requestUpdate(devices, []);
   }
 
   onMIDISend(name, data) {
@@ -150,7 +155,9 @@ export class HasakMidi extends LitElement {
   render() {
     // ${Object.keys(this.dev).map(d => html`<div>${d}</div>`)}
     return html`
-	${Object.keys(this.dev).map(d => html`<hasak-device .midi=${this} name=${d}></hasak-device>`)}
+	${Object.keys(this.dev)
+		.filter(d => ! d.match(/^.*Through.*$/))
+		.map(d => html`<hasak-device .midi=${this} name=${d}></hasak-device>`)}
 	`;
   }
 }

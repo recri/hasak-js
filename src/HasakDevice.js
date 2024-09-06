@@ -32,11 +32,16 @@
 //
 import { LitElement, html, css } from 'lit';
 
+import { hasakProperties as hasakProperties100 } from './hasakProperties100.js' 
+import { hasakProperties110 } from './hasakProperties110.js'
+
 import "./hasak-view.js"
 
 const NOTE_ON = 0x90;
 const NOTE_OFF = 0x80;
 const CTRL_CHANGE = 0xB0;
+const SYS_EX = 0xF0;		// system exclusive message 
+// const SYS_EX_END = 0xF7;
 
 const DATA_MSB = 6;
 const DATA_LSB = 38;
@@ -49,12 +54,15 @@ const NRPN_STRING_START = 3;
 const NRPN_STRING_END = 4;
 const NRPN_STRING_BYTE = 5;
 
-const ENDP_JSON_TO_HOST = 0;
+// const ENDP_JSON_TO_HOST = 0;
 
 const VAL_HASAK_ID_DEVICE = 0xad5;
 // const VAL_CWKEYER_ID_DEVICE = 0x50F;
 const VAL_HASAK1_ID_VERSION = 100;
 const VAL_HASAK2_ID_VERSION = 110;
+
+// const SYS_EX_ID = 0x7D;		// system exclusive non-commercial id
+// const SYS_EX_HASAK = 'H'	// system exclusive hasak sub id
 
 export class HasakDevice extends LitElement {
 
@@ -68,51 +76,56 @@ export class HasakDevice extends LitElement {
 
   onmidimessage(msg) {
     // console.log(`onmidimessage(${msg[0]}, ${msg[1]}, ${msg[2]})`)
-    const [cmd,msg1,msg2] = msg
-    /* eslint-disable no-bitwise */
-    const chan = 1+(cmd&0xF)
-    if ( ! this.channels[chan]) this.channels[chan] = 0;
-    this.channels[chan] += 1;
-    this.channel = chan;
-    switch (cmd & 0xf0) {
-    /* eslint-enable no-bitwise */
-    case NOTE_ON: {
-      const note = msg1;
-      const velocity = msg2;
-      const oldvelocity = this.notes[note]
-      this.notes[note] = velocity;
-      this.noteInvokeListeners('note', note, oldvelocity);
-      break;
-    }
-    case NOTE_OFF: {
-      const note = msg1;
-      // const velocity = msg2;
-      const oldvelocity = this.notes[note]
-      this.notes[note] = 0; 
-      this.noteInvokeListeners('note', note, oldvelocity);
-      break;
-    }
-    case CTRL_CHANGE: { 
-      // notify first, then set
-      const ctrl = msg1;
-      const data = msg2;
-      const olddata = this.ctrls[ctrl]
-      this.ctrlInvokeListeners('ctrl', ctrl, olddata)
-      this.ctrls[ctrl] = data;
-      if (ctrl === DATA_LSB) {
-	/* eslint-disable no-bitwise */
-	const nrpn = (this.ctrls[NRPN_MSB]<<7) | this.ctrls[NRPN_LSB]
-	const nrpnData = (this.ctrls[DATA_MSB]<<7) | (this.ctrls[DATA_LSB]); 
-	const oldNrpnData = this.nrpns[nrpn];
+    const [cmd,] = msg
+    if (cmd === SYS_EX) {
+      console.log(`SYS_EX ${msg.length} bytes msg[1] = ${msg[1]}, msg[2] = ${msg[2]}`)
+    } else {
+      const [,msg1,msg2] = msg
+      /* eslint-disable no-bitwise */
+      const chan = 1+(cmd&0xF)
+      if ( ! this.channels[chan]) this.channels[chan] = 0;
+      this.channels[chan] += 1;
+      this.channel = chan;
+      switch (cmd & 0xf0) {
 	/* eslint-enable no-bitwise */
-	this.nrpns[nrpn] = nrpnData;
-	this.nrpnInvokeListeners('nrpn', nrpn, oldNrpnData);
+      case NOTE_ON: {
+	const note = msg1;
+	const velocity = msg2;
+	const oldvelocity = this.notes[note]
+	this.notes[note] = velocity;
+	this.noteInvokeListeners(note, oldvelocity);
+	break;
       }
-      break;
-    }
-    default:
-      console.log(`HasakDevice: uncaught message ${msg[0]} ${msg[1]} ${msg[2]}}`);
-      break;
+      case NOTE_OFF: {
+	const note = msg1;
+	// const velocity = msg2;
+	const oldvelocity = this.notes[note]
+	this.notes[note] = 0; 
+	this.noteInvokeListeners(note, oldvelocity);
+	break;
+      }
+      case CTRL_CHANGE: { 
+	// notify first, then set
+	const ctrl = msg1;
+	const data = msg2;
+	const olddata = this.ctrls[ctrl]
+	this.ctrlInvokeListeners(ctrl, olddata)
+	this.ctrls[ctrl] = data;
+	if (ctrl === DATA_LSB) {
+	  /* eslint-disable no-bitwise */
+	  const nrpn = (this.ctrls[NRPN_MSB]<<7) | this.ctrls[NRPN_LSB]
+	  const nrpnData = (this.ctrls[DATA_MSB]<<7) | (this.ctrls[DATA_LSB]); 
+	  const oldNrpnData = this.nrpns[nrpn];
+	  /* eslint-enable no-bitwise */
+	  this.nrpns[nrpn] = nrpnData;
+	  this.nrpnInvokeListeners(nrpn, oldNrpnData);
+	}
+	break;
+      }
+      default:
+	console.log(`HasakDevice: uncaught message ${msg[0]} ${msg[1]} ${msg[2]}}`);
+	break;
+      }
     }
   }
 
@@ -126,34 +139,52 @@ export class HasakDevice extends LitElement {
   //
 
   noteListen(index, listener) { 
-    if ( ! this.noteListeners[index]) this.noteListeners[index] = [];
-    this.noteListeners[index].push(listener);
+    if (index === '*')
+      this.allNoteListeners.push(listener)
+    else if ( ! this.noteListeners[index]) 
+      this.noteListeners[index] = [listener];
+    else
+      this.noteListeners[index].push(listener);
   }
 
   ctrlListen(index, listener) {
-    if ( ! this.ctrlListeners[index]) this.ctrlListeners[index] = [];
-    this.ctrlListeners[index].push(listener);
+    if (index === '*')
+      this.allCtrlListeners.push(listener)
+    else if ( ! this.ctrlListeners[index])
+      this.ctrlListeners[index] = [listener];
+    else
+      this.ctrlListeners[index].push(listener);
   }
 
   nrpnListen(index, listener) {
-    if ( ! this.nrpnListeners[index]) this.nrpnListeners[index] = [];
-    this.nrpnListeners[index].push(listener);
+    if (index === '*')
+      this.allNrpnListeners.push(listener)
+    else if ( ! this.nrpnListeners[index]) 
+      this.nrpnListeners[index] = [listener];
+    else
+      this.nrpnListeners[index].push(listener);
   }
   
   //
   // invoke listeners
   //
   
-  noteInvokeListeners(tag, index, oldval) { 
-    ['*', index].forEach(i => this.noteListeners[i] && this.noteListeners[i].forEach(f => f(tag, index, oldval)))
+  noteInvokeListeners(note, oldval) { 
+    const type = 'note';
+    this.allNoteListeners.forEach(listener => listener(type, note, oldval));
+    if (this.noteListeners[note]) this.noteListeners[note].forEach(listener => listener(type, note, oldval));
   }
 
-  ctrlInvokeListeners(tag, index, oldval) { 
-    ['*', index].forEach(i => this.ctrlListeners[i] && this.ctrlListeners[i].forEach(f => f(tag, index, oldval)))
+  ctrlInvokeListeners(ctrl, oldval) { 
+    const type = 'ctrl';
+    this.allCtrlListeners.forEach(listener => listener(type, ctrl, oldval));
+    if (this.ctrlListeners[ctrl]) this.ctrlListeners[ctrl].forEach(listener => listener(type, ctrl, oldval))
   }
 
-  nrpnInvokeListeners(tag, index, oldval) { 
-    ['*', index].forEach(i => this.nrpnListeners[i] && this.nrpnListeners[i].forEach(f => f(tag, index, oldval)))
+  nrpnInvokeListeners(nrpn, oldval) { 
+    const type = 'nrpn';
+    this.allNrpnListeners.forEach(listener => listener(type, nrpn, oldval));
+    if (this.nrpnListeners[nrpn]) this.nrpnListeners[nrpn].forEach(listener => listener(type, nrpn, oldval))
   }
 
   //
@@ -183,19 +214,22 @@ export class HasakDevice extends LitElement {
   }
   /* eslint-enable no-bitwise */
   
-  /*
-  ** device management implementation
-  ** when we open a device we try to get a JSON string
-  */
-  deviceListener(tag, index, oldval) {
-    console.log(`deviceListener(${tag}, ${index}, ${oldval})`);
-    switch (tag) {
-    case 'note':
-      break;
+  //
+  // device management implementation
+  // when we open a device we try to get a JSON string
+  //
+  deviceListener(type, tindex, oldval) {
+    // console.log(`**deviceListener(${type}, ${tindex}, ${oldval})`);
+    switch (type) {
+    case 'note': console.log(`*deviceListener(${type}, ${tindex}, ${oldval})`); break;
     case 'ctrl':
+      switch (tindex) {
+      case DATA_MSB: case DATA_LSB: case NRPN_LSB: case NRPN_MSB: break;
+      default: console.log(`*deviceListener(${type}, ${tindex}, ${oldval})`); break;
+      }
       break;
     case 'nrpn':
-      switch(index) {
+      switch(tindex) {
       case NRPN_ID_DEVICE: 
 	console.log(`ID_DEVICE === ${this.nrpnGet(NRPN_ID_DEVICE)}`);
 	break;
@@ -203,20 +237,23 @@ export class HasakDevice extends LitElement {
 	console.log(`ID_VERSION === ${this.nrpnGet(NRPN_ID_VERSION)}`);
 	if (this.nrpnGet(NRPN_ID_DEVICE) === VAL_HASAK_ID_DEVICE) {
 	  if (this.nrpnGet(NRPN_ID_DEVICE) >= VAL_HASAK2_ID_VERSION) {
-	    if ( ! this.request_json) {
-	      this.request_json = true;
-	      console.log("requesting JSON string");
+	    console.log("fetching local copy of props v110");
+	    this.props = hasakProperties110
+	    // if ( ! this.request_json) {
+	      // this.request_json = true;
+	      // console.log("requesting JSON string");
 	      /* eslint-disable no-bitwise */
-	      this.nrpnSet(NRPN_STRING_START, ENDP_JSON_TO_HOST<<9);
+	      // this.nrpnSet(NRPN_STRING_START, ENDP_JSON_TO_HOST<<9);
 	      /* eslint-enable no-bitwise */
 	      // console.log('sending NRPN_STRING_START, ENDP_JSON_TO_HOST<<9');
-	      this.string = [];
-	    } else {
-	      console.log('avoided extra NRPN_ID_JSON');
-	    }
+	      // this.string = [];
+	  // } else {
+	     // console.log('avoided duplicate JSON string request');
+	    // }
 	  } else if (this.nrpnGet(NRPN_ID_DEVICE) >= VAL_HASAK1_ID_VERSION) {
 	    // pull props from canned image
-	    console.log("fetching local copy of properties");
+	    console.log("fetching local copy of props v100");
+	    this.props = hasakProperties100
 	  } else {
 	    // don't know what this means
 	    console.log("what?");
@@ -247,23 +284,34 @@ export class HasakDevice extends LitElement {
 	this.endTime = performance.now();
 	this.endDate = new Date();
 	const dTime = this.endTime-this.startTime;
-	const dDate = this.endDate-this.startDate;
+	// const dDate = this.endDate-this.startDate;
 	const cpsTime = this.string.length / (dTime / 1e3);
-	const cpsDate = this.string.length / ((dDate) / 1e3);
-	console.log(`received ${this.string.length} bytes at ${cpsTime} or ${cpsDate} chars/second`);
-	if (this.nrpnGet(NRPN_STRING_END) === 0) {
+	// const cpsDate = this.string.length / ((dDate) / 1e3);
+	console.log(`received ${this.string.length} bytes at ${cpsTime} chars/second`);
+	console.log(`(${cpsTime*12} with overhead)`);
+	if (this.nrpnGet(NRPN_STRING_END) !== 0) {
+	  console.log(`STRING_END ${this.nrpnGet(NRPN_STRING_END)} is not 0`);
 	  break;
 	}
-	this.properties = JSON.parse(this.string.join(''));
+	console.log(`found JSON string`);
+	try {
+	  this.jsonString = this.string.join('')
+	  this.props = JSON.parse(this.jsonString) 
+	} catch(error) {
+	  console.log(`error parsing props ${error}`);
+	}
+	// Object.entries(this.props).forEach((k,v) =>
+	//  console.log(`${k}: ${Object.entries(v).map((k2,v2) => `${k2}: ${v2}`).join(', ')}`))
+	this.requestUpdate();
 	break;
       }
       default:
-	console.log(`deviceListener(${tag}, ${index}, ${oldval}`);
+	console.log(`*deviceListener(${type}, ${tindex}, ${oldval})`);
 	break;
       }
       break;
     default:
-      console.log(`deviceListener(${tag}, ${index}, ${oldval}`);
+      console.log(`*deviceListener(${type}, ${tindex}, ${oldval})`);
       break;
     }
   }
@@ -277,7 +325,7 @@ export class HasakDevice extends LitElement {
       name: { type: String },
       midi: { type: Object },
       views: { type: Array },
-      properties: { type: Object}
+      props: { type: Object}
     };
   }
   
@@ -291,12 +339,25 @@ export class HasakDevice extends LitElement {
 
   connectedCallback() {
     super.connectedCallback()
+    // console.log(`HasakDevice[${this.name}] calling back to HasakMidi to name ourself`);
     this.midi.deviceCallback(this.name, this);
     this.noteListen('*', (type,tindex,oldvalue) => this.deviceListener(type,tindex,oldvalue));
     this.ctrlListen('*', (type,tindex,oldvalue) => this.deviceListener(type,tindex,oldvalue));
     this.nrpnListen('*', (type,tindex,oldvalue) => this.deviceListener(type,tindex,oldvalue));
+    this.nrpnSet(NRPN_ID_DEVICE, 0);
+    this.nrpnSet(NRPN_ID_VERSION, 0);
   }
   
+  get props() { return this._props; }
+
+  set props(p) {
+    console.log(`set props(${p})`);
+    this._props = p;
+    this.requestUpdate('props');
+    if (this.views) 
+      Object.keys(this.views).forEach(v => { this.views[v].props = this.props });
+  }
+
   constructor() {
     super();
     this.channels = {};
@@ -307,18 +368,23 @@ export class HasakDevice extends LitElement {
     this.allNoteListeners = [];
     this.allCtrlListeners = [];
     this.allNrpnListeners = [];
-    this.noteListeners = {};
-    this.ctrlListeners = {};
-    this.nrpnListeners = {};
+    this.noteListeners = [];
+    this.ctrlListeners = [];
+    this.nrpnListeners = [];
+    this._props = null;
     this.views = {raw: null, json: null, complete: null, min: null };
   }
 
   render() {
+    console.log(`HasakDevice.render with props ${this.props}`);
     return html`
-	<hasak-view .device=${this} view="raw"></hasak-view>
-	<hasak-view .device=${this} view="json"></hasak-view>
-	<hasak-view .device=${this} view="complete"></hasak-view>
-	<hasak-view .device=${this} view="min"></hasak-view>
+	<div class="device">
+	  <div class="device heading">${this.name}</div>
+	  <hasak-view .device=${this} view="raw"></hasak-view>
+	  <hasak-view .device=${this} view="json"></hasak-view>
+	  <hasak-view .device=${this} view="complete"></hasak-view>
+	  <hasak-view .device=${this} view="min"></hasak-view>
+	</div>
     `;
   }
 }
