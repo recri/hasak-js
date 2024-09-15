@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit';
 
-export class HasakValue extends LitElement {
+export class HasakCheckbox extends LitElement {
   static get properties() {
     return {
       device: { type: Object }, // parent device
@@ -21,31 +21,43 @@ export class HasakValue extends LitElement {
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    this.device.nrpnListen(this.props.value, this.itemListener());
+    this.device.nrpnListen(this.props.value, this.itemListener);
+  }
+
+  onChange(e) {
+    this.device.nrpnSet(
+      this.props.value,
+      this.device.nrpnGet(this.props.value) === 0 ? 1 : 0
+    );
   }
 
   static get styles() {
-    return css`
-	`;
+    return css``;
   }
 
   render() {
     const { key } = this;
-    const { value, title } = this.props;
+    const { value, label, title } = this.props;
     const nrpnValue = this.device.nrpnGet(value);
-    console.log(
-      `hasak-value ${this.device.name} key=${key} nrpn=${value} title=${title} value=${nrpnValue}`,
-    );
-      return html`
-        <div class="value" title="${title}>${nrpnValue}</div>
-        `;
-    }
+    return html`
+      <div>
+        <input
+          name="${key}"
+          type="checkbox"
+          @change="${this.onChange}"
+          ?checked=${nrpnValue !== 0}
+        />
+        <label for="${key}">${label}</label>
+      </div>
+    `;
   }
 }
 
-customElements.define('hasak-value', HasakValue);
+customElements.define('hasak-checkbox', HasakCheckbox);
 
 // Local Variables:
 // mode: JavaScript
 // js-indent-level: 2
 // End:
+/*
+ */

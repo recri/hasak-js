@@ -11,13 +11,14 @@
     "prepare": "husky",
     "test": "web-test-runner --coverage",
     "test:watch": "web-test-runner --watch",
-    "build": "rimraf dist && rollup -c rollup.config.js && npm run analyze -- --exclude dist",
+    "build": "rimraf dist && rollup -c rollup.config.js && npm run analyze -- --exclude dist && rsync -av assets/ dist/assets/",
     "start:build": "web-dev-server --root-dir dist --app-index index.html --open",
     "analyze": "cem analyze --litelement",
     "start": "web-dev-server"
   },
   "dependencies": {
-    "lit": "^3.1.4"
+    "lit": "^3.1.4",
+    "@shoelace-style/shoelace": "^2.16.0"
   },
   "devDependencies": {
     "@custom-elements-manifest/analyzer": "^0.10.3",

@@ -4,16 +4,23 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="Description" content="Put your description here.">
+  <meta name="Description" content="Hasak CW Keyer Controller.">
+  <link rel="icon" href="/assets/app-icons/favicon.ico">
+  <link rel="icon" href="/assets/app-icons/keyer-logo-512x512.svg" type="image/svg+xml">
+  <link rel="manifest" href="/assets/manifest.json">
   <base href="/">
 
   <style>
-    html,
-    body {
+    /* @import "assets/themes/light.css"; */
+    :root {
+      --hasak-app-background-color: #dddddd;
+    }
+    html, body {
       margin: 0;
       padding: 0;
+      font-size: calc(10px + 2vmin);
       font-family: sans-serif;
-      background-color: #ededed;
+      background-color: var(--hasak-app-background-color);
     }
   </style>
   <title>hasak-js</title>
