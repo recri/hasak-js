@@ -24,10 +24,10 @@ export class HasakCheckbox extends LitElement {
     this.device.nrpnListen(this.props.value, this.itemListener);
   }
 
-  onChange(e) {
+  onChange() {
     this.device.nrpnSet(
       this.props.value,
-      this.device.nrpnGet(this.props.value) === 0 ? 1 : 0
+      this.device.nrpnGet(this.props.value) === 0 ? 1 : 0,
     );
   }
 
@@ -40,7 +40,7 @@ export class HasakCheckbox extends LitElement {
     const { value, label, title } = this.props;
     const nrpnValue = this.device.nrpnGet(value);
     return html`
-      <div>
+      <div class="body" title="${title}">
         <input
           name="${key}"
           type="checkbox"

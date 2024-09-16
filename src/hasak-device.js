@@ -58,7 +58,7 @@ const NRPN_STRING_BYTE = 8;
 // const ENDP_JSON_TO_HOST = 0;
 
 const VAL_HASAK_ID_DEVICE = 0xad5;
-const VAL_CWKEYER_ID_DEVICE = 0x50F;
+// const VAL_CWKEYER_ID_DEVICE = 0x50F;
 const VAL_HASAK1_ID_VERSION = 100;
 const VAL_HASAK2_ID_VERSION = 110;
 
@@ -259,7 +259,7 @@ export class HasakDevice extends LitElement {
   nrpnQuery(nrpn) {
     this.nrpnSet(NRPN_NRPN_QUERY, nrpn);
   }
-  
+
   //
   // get the props key for type and tindex
   //
@@ -452,29 +452,47 @@ export class HasakDevice extends LitElement {
     this.requestUpdate();
   }
 
-  getProp(key, prop) { return this.props[key][prop]; }
+  getLabel(key) {
+    return this.props[key].label || key.substring(5);
+  }
 
-  getLabel(key) { return this.getProp(key, 'label') || 'no label'; }
+  getUnit(key) {
+    return this.props[key].unit || 'no unit';
+  }
 
-  getUnit(key) { return this.getProp(key, 'unit') || 'no units'; }
+  getTitle(key) {
+    return this.props[key].title || 'no title';
+  }
 
-  getTitle(key) { return this.getProp(key, 'title') || 'no title'; }
+  getValue(key) {
+    return this.props[key].value || 'no value';
+  }
 
-  getValue(key) { return this.getProp(key, 'value') || 'no value'; }
+  getValues(key) {
+    return this.props[key].values || 'no values';
+  }
 
-  nrpnGetFromKey(key) { return this.getNrpn(this.getValue(key)); }
+  getOpts(key) {
+    return this.props[key].opts || 'no opts';
+  }
 
-  nrpnSetFromKey(key, value) { this.setNrpn(this.getValue(key), value); }
-  
+  nrpnGetFromKey(key) {
+    return this.getNrpn(this.getValue(key));
+  }
+
+  nrpnSetFromKey(key, value) {
+    this.setNrpn(this.getValue(key), value);
+  }
+
   nrpn_query(key) {
-    console.log(`nrpn_query(${key})`);
+    console.log(`nrpn_query(${key}) ${this.getValue(key)}`);
     this.nrpnQuery(this.getValue(key));
   }
 
   nrpn_query_list(keys) {
     keys.forEach(key => this.nrpn_query(key));
   }
-  
+
   constructor() {
     super();
     this.channels = {};
@@ -500,22 +518,44 @@ export class HasakDevice extends LitElement {
     console.log(`hasak-device render with props ${this.props}`);
     if (this.props)
       return html`
+        <hr />
         <hasak-view .device=${this} view="min"></hasak-view>
-        <hasak-view .device=${this} view="pots"></hasak-view>
-        <hasak-view .device=${this} view="hdw"></hasak-view>
-	<hr/>
+        <hr />
         <hasak-view .device=${this} view="fist"></hasak-view>
-	<hr/>
+        <hr />
         <hasak-view .device=${this} view="envelope"></hasak-view>
-	<hr/>
+        <hr />
         <hasak-view .device=${this} view="enables"></hasak-view>
+        <hr />
+        <hasak-view .device=${this} view="ptt"></hasak-view>
+        <hr />
+        <hasak-view .device=${this} view="ramp"></hasak-view>
+        <hr />
+        <hasak-view .device=${this} view="keyer"></hasak-view>
+        <hr />
+        <hasak-view .device=${this} view="levels"></hasak-view>
+        <hr />
+        <hasak-view .device=${this} view="misc"></hasak-view>
+        <hr />
+        <hasak-view .device=${this} view="pinput"></hasak-view>
+        <hr />
+        <hasak-view .device=${this} view="poutput"></hasak-view>
+        <hr />
+        <hasak-view .device=${this} view="padcmap"></hasak-view>
+        <hr />
+        <hasak-view .device=${this} view="mixens"></hasak-view>
+        <hr />
+        <hasak-view .device=${this} view="mixers"></hasak-view>
+        <hr />
+        <hasak-view .device=${this} view="wm8960"></hasak-view>
+        <hr />
+        <hasak-view .device=${this} view="statistics"></hasak-view>
       `;
     return html`${this.name}`;
   }
 }
 /* 	<hr/>
-        <hasak-view .device=${this} view="statistics"></hasak-view>
-*/
+ */
 
 customElements.define('hasak-device', HasakDevice);
 

@@ -3,8 +3,8 @@ A controller for Hasak keyers.
 
 Hasak-js is a web application which can run on any device which runs a web browser.  It will
 only work on web browsers which support the Web MIDI API, such as Google Chrome.  It can 
-control any keyer which is plugged into a USB port on the device.  It can be installed
-on the device so it is available even when disconnected from the internet.
+control any hasak based keyer which is plugged into a USB port on the device.  It can be
+ installed on the device so it is available even when disconnected from the internet.
 
 [![Built with open-wc recommendations](https://img.shields.io/badge/built%20with-open--wc-blue.svg)](https://github.com/open-wc)
 

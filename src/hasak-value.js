@@ -25,8 +25,7 @@ export class HasakValue extends LitElement {
   }
 
   static get styles() {
-    return css`
-	`;
+    return css``;
   }
 
   render() {
@@ -36,10 +35,7 @@ export class HasakValue extends LitElement {
     console.log(
       `hasak-value ${this.device.name} key=${key} nrpn=${value} title=${title} value=${nrpnValue}`,
     );
-      return html`
-        <div class="value" title="${title}>${nrpnValue}</div>
-        `;
-    }
+    return html` <div class="value" title="${title}">${nrpnValue}</div> `;
   }
 }
 

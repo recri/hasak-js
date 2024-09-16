@@ -1,9 +1,9 @@
 import { LitElement, html, css } from 'lit';
 
-import './hasak-checkbox.js';
+import './hasak-checkboxes.js';
 import './hasak-number.js';
 import './hasak-switch.js';
-import './hasak-block.js';
+import './hasak-numbers.js';
 
 export class HasakView extends LitElement {
   static get properties() {
@@ -21,120 +21,107 @@ export class HasakView extends LitElement {
     console.log(
       `hasak-view render ${this.device.name}, ${this.view}] in render with props ${this.device.props}`,
     );
-    if (!this.device) return html`hasak ?device?`;
-    if (!this.device.props) return html`${this.device.name}`;
+    if (!this.device) return html`hasak ?device? ${this.view}`;
+    if (!this.device.props) return html`${this.device.name} ${this.view}`;
     switch (this.view) {
-    case 'min':
-      const keys = ['NRPN_VOLUME', 'NRPN_LEVEL', 'NRPN_TONE', 'NRPN_SPEED']
-      this.device.nrpn_query_list(keys);
-      return html`
-        <style>
-	  div.body { display: grid; grid-template-areas: "a b c d"; column-gap: 10px; }
-	  div.label,div.units { font-size: smaller; text-align: center; }
-	</style>
-	<div class="body">
-	  <div class="label" title="${this.device.getTitle('NRPN_VOLUME')}"> ${this.device.getLabel('NRPN_VOLUME')} </div>
-	  <div class="label" title="${this.device.getTitle('NRPN_LEVEL')}"> ${this.device.getLabel('NRPN_LEVEL')} </div>
-	  <div class="label" title="${this.device.getTitle('NRPN_TONE')}"> ${this.device.getLabel('NRPN_TONE')} </div>
-	  <div class="label" title="${this.device.getTitle('NRPN_SPEED')}"> ${this.device.getLabel('NRPN_SPEED')} </div>
-          <div class="value"> <hasak-number key="NRPN_VOLUME" .device=${this.device}></hasak-value></div>
-          <div class="value"> <hasak-number key="NRPN_LEVEL"  .device=${this.device}></hasak-value></div>
-          <div class="value"> <hasak-number key="NRPN_TONE"   .device=${this.device}></hasak-value></div>
-          <div class="value"> <hasak-number key="NRPN_SPEED"  .device=${this.device}></hasak-value></div>
-	  <div class="units"> ${this.device.getUnit('NRPN_VOLUME')} </div>
-	  <div class="units"> ${this.device.getUnit('NRPN_LEVEL')} </div>
-	  <div class="units"> ${this.device.getUnit('NRPN_TONE')} </div>
-	  <div class="units"> ${this.device.getUnit('NRPN_SPEED')} </div>
-	</div>
-    `;
-
-    case 'fist': {
-      const keys = ["NRPN_WEIGHT","NRPN_RATIO","NRPN_FARNS","NRPN_COMP"];
-      this.device.nrpn_query_list(keys);
-      return html`
-        <style>
-	  div.body { display: grid; grid-template-areas: "a b c d"; column-gap: 10px; }
-	  div.label,div.units { font-size: smaller; text-align: center; }
-	</style>
-	<div class="body">
-          ${keys.map(key => html`<div class="label" title="${this.device.getTitle(key)}"> ${this.device.getLabel(key)} </div>`)}
-	  ${keys.map(key => html`<div class="value"> <hasak-number key="${key}" .device=${this.device}></hasak-value></div>`)}
-	  ${keys.map(key => html`<div class="units"> ${this.device.getUnit(key)} </div>`)}
-	</div>
-      `;
-    }
-
-    case 'pots':
-      this.device.nrpn_query("NRPN_PADC_ENABLE");
+      case 'min':
         return html`
           <div class="body">
-            <div class="checkbox">
-              <hasak-checkbox
-                key="NRPN_PADC_ENABLE"
-                .device=${this.device}
-              ></hasak-checkbox>
-            </div>
+            <hasak-numbers
+              .device=${this.device}
+              .keys=${['NRPN_VOLUME', 'NRPN_LEVEL', 'NRPN_TONE', 'NRPN_SPEED']}
+            ></hasak-numbers>
+            <hasak-checkboxes
+              .device=${this.device}
+              .keys=${['NRPN_PADC_ENABLE', 'NRPN_HDW_OUT_ENABLE']}
+            ></hasak-checkboxes>
           </div>
         `;
 
-    case 'hdw':
-      this.device.nrpn_query("NRPN_HDW_OUT_ENABLE");
+      case 'fist':
         return html`
           <div class="body">
-            <div class="checkbox">
-              <hasak-checkbox
-                key="NRPN_HDW_OUT_ENABLE"
-                .device=${this.device}
-              ></hasak-checkbox>
-            </div>
+            <hasak-numbers
+              .device=${this.device}
+              .keys=${['NRPN_WEIGHT', 'NRPN_RATIO', 'NRPN_COMP', 'NRPN_FARNS']}
+            ></hasak-numbers
+            >>
           </div>
         `;
 
-    case 'mixers': /* mixer levels */
-      return html`mixer levels`;
-
-    case 'mixens': /* mixer enables */
-      return html`mixer enables`;
-      
-    case 'enables': {
-      const keys = ["NRPN_INPUT_ENABLE","NRPN_OUTPUT_ENABLE","NRPN_ECHO_ENABLE","NRPN_LISTENER_ENABLE",
-		    "NRPN_PIN_ENABLE","NRPN_POUT_ENABLE","NRPN_PADC_ENABLE","NRPN_ST_ENABLE","NRPN_TX_ENABLE",
-		    "NRPN_IQ_ENABLE","NRPN_PTT_REQUIRE","NRPN_RKEY_ENABLE","NRPN_CW_AUTOPTT","NRPN_RX_MUTE",
-		    "NRPN_MIC_HWPTT","NRPN_CW_HWPTT","NRPN_NOTE_LEAK","NRPN_CTRL_LEAK"];
-      this.device.nrpn_query_list(keys);
-      return html`
+      case 'enables': {
+        const keys = [
+          'NRPN_INPUT_ENABLE',
+          'NRPN_OUTPUT_ENABLE',
+          'NRPN_ECHO_ENABLE',
+          'NRPN_LISTENER_ENABLE',
+          'NRPN_PIN_ENABLE',
+          'NRPN_POUT_ENABLE',
+          'NRPN_PADC_ENABLE',
+          'NRPN_ST_ENABLE',
+          'NRPN_TX_ENABLE',
+          'NRPN_IQ_ENABLE',
+          'NRPN_PTT_REQUIRE',
+          'NRPN_RKEY_ENABLE',
+          'NRPN_CW_AUTOPTT',
+          'NRPN_RX_MUTE',
+          'NRPN_MIC_HWPTT',
+          'NRPN_CW_HWPTT',
+        ];
+        keys.forEach(
+          key =>
+            this.device.props[key] ||
+            console.log(`there is no ${key} in properties`),
+        );
+        return html`
           <div class="body">
-	    ${keys.map(key => html`
-            <div class="checkbox">
-              <hasak-checkbox
-		key="${key}"
-                .device=${this.device}
-              ></hasak-checkbox>
-            </div>
-	  `)}
+            <hasak-checkboxes
+              .device=${this.device}
+              .keys=${keys}
+            ></hasak-checkboxes>
           </div>
-	`;
-    }
+        `;
+      }
 
-    case 'statistics': {
-      const keys = [ "NRPN_MIDI_INPUTS", "NRPN_MIDI_OUTPUTS", "NRPN_MIDI_ECHOES", "NRPN_MIDI_SENDS", "NRPN_MIDI_NOTES",
-		     "NRPN_MIDI_CTRLS", "NRPN_MIDI_NRPNS", "NRPN_LISTENER_NODES", "NRPN_LISTENER_LISTS", "NRPN_LISTENER_CALLS",
-		     "NRPN_LISTENER_FIRES", "NRPN_LISTENER_LOOPS" ];
-      const statistics = (key) => html`
-              <div class="number">
-	        <hasak-value key="${key}" .device=${this.device}></hasak-value>
-              </div>
-	  `;
-      this.nrpn_query_list(keys);
-      return html`
+      case 'envelope':
+        return html`
           <div class="body">
-	    ${keys.map(key => statistics(key))}
-	    <sl-button @click=this.device.nrpnSetFromKey("NRPN_STATS_RESET", 0)>Statistics Reset</sl-button>
+            <hasak-numbers
+              .device=${this.device}
+              .keys=${['NRPN_RISE_TIME', 'NRPN_FALL_TIME']}
+            ></hasak-numbers>
+            <hasak-selects
+              .device=${this.device}
+              .keys=${['NRPN_RISE_RAMP', 'NRPN_FALL_RAMP']}
+            ></hasak-selects>
           </div>
-	`;
-    }
-      
-    default:
+        `;
+
+      //    case 'mixers': /* mixer levels */
+      //      return html`mixer levels`;
+
+      //    case 'mixens': /* mixer enables */
+      //      return html`mixer enables`;
+
+      //    case 'statistics': {
+      //      const keys = [ "NRPN_MIDI_INPUTS", "NRPN_MIDI_OUTPUTS", "NRPN_MIDI_ECHOES", "NRPN_MIDI_SENDS", "NRPN_MIDI_NOTES",
+      //		     "NRPN_MIDI_CTRLS", "NRPN_MIDI_NRPNS", "NRPN_LISTENER_NODES", "NRPN_LISTENER_LISTS", "NRPN_LISTENER_CALLS",
+      //		     "NRPN_LISTENER_FIRES", "NRPN_LISTENER_LOOPS" ];
+      //      const statistics = (key) => html`
+      //              <div class="number">
+      //	        <hasak-value key="${key}" .device=${this.device}></hasak-value>
+      //              </div>
+      //	  `;
+      //      this.nrpn_query_list(keys);
+      //      return html`
+      //          <div class="body">
+      //	    ${keys.map(key => statistics(key))}
+      //	    <sl-button @click=this.device.nrpnSetFromKey("NRPN_STATS_RESET", 0)>Statistics Reset</sl-button>
+      //          </div>
+      //	`;
+      //    }
+
+      default:
         return html`hasak-view ${this.device.name} ${this.view}`;
     }
   }

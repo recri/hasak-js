@@ -60,7 +60,7 @@ export class HasakMidi extends LitElement {
   }
 
   deviceCallback(name, dev) {
-    // console.log(`deviceCallback(${name}, ${dev})`);
+    console.log(`deviceCallback(${name}, ${dev})`);
     // don't update yet until we get the <hasak-device> to display
     this.dev[name] = dev;
   }

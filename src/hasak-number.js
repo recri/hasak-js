@@ -1,8 +1,11 @@
 /*
-** Redo this so that the number expands to a number with
-** adjustment buttons when selected, and bind up/down arrow
-** with modifier(s) to adjust by multiples of +/- 10
-*/
+ ** Redo this so that the number expands to a number with
+ ** adjustment buttons when selected, and bind up/down arrow
+ ** with modifier(s) to adjust by multiples of +/- 10
+ **
+ ** I may need to post the sl-input event myself when calling
+ ** .stepUp() and .stepDown()
+ */
 
 import { LitElement, html, css } from 'lit';
 
@@ -34,17 +37,22 @@ export class HasakNumber extends LitElement {
   }
 
   onInput(e) {
-    // console.log(`onInput e.target.input.value = ${e.target.input.value}`);
+    console.log(`onInput e.target.input.value = ${e.target.input.value}`);
     this.device.nrpnSet(this.props.value, e.target.input.value);
   }
 
   // need to know the dom node for sl-input to apply these two.
   stepDown() {
-    this.renderRoot.querySelector('sl-input').stepDown();
+    const node = this.renderRoot.querySelector('sl-input');
+    node.stepDown();
   }
 
   stepUp() {
-    this.renderRoot.querySelector('sl-input').stepUp();
+    const node = this.renderRoot.querySelector('sl-input');
+    if (!node) console.log(`this.renderRoot.querySelector('sl-input') failed`);
+    else if (!node.stepUp)
+      console.log(`found sl-input, but has no stepUp method`);
+    else node.stepUp();
   }
 
   static get styles() {
@@ -78,12 +86,10 @@ export class HasakNumber extends LitElement {
 
   render() {
     const { key } = this;
-    const { value, label, title, range, unit } = this.props;
+    const { value, title, range } = this.props; // , label, unit
     const [min, max] = range ? range.split(' ') : [undefined, undefined];
     const nrpnValue = this.device.nrpnGet(value);
-    console.log(
-      `hasak-number ${this.device.name} key=${key} nrpn=${value} label=${label} title=${title} range=${range} unit=${unit} value=${nrpnValue} min=${min} max=${max}`,
-    );
+    // console.log(`hasak-number ${this.device.name} key=${key} nrpn=${value} label=${label} title=${title} range=${range} unit=${unit} value=${nrpnValue} min=${min} max=${max}`);
     switch (key) {
       case 'NRPN_VOLUME':
       case 'NRPN_LEVEL':
