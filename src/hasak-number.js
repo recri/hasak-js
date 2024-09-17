@@ -36,23 +36,26 @@ export class HasakNumber extends LitElement {
     this.device.nrpnListen(this.props.value, this.itemListener());
   }
 
+  targetOnInput(target) {
+    this.device.nrpnSet(this.props.value, target.input.value);
+  }
+  
   onInput(e) {
     console.log(`onInput e.target.input.value = ${e.target.input.value}`);
-    this.device.nrpnSet(this.props.value, e.target.input.value);
+    this.targetOnInput(e.target);
   }
 
   // need to know the dom node for sl-input to apply these two.
   stepDown() {
     const node = this.renderRoot.querySelector('sl-input');
     node.stepDown();
+    this.targetOnInput(node)
   }
 
   stepUp() {
     const node = this.renderRoot.querySelector('sl-input');
-    if (!node) console.log(`this.renderRoot.querySelector('sl-input') failed`);
-    else if (!node.stepUp)
-      console.log(`found sl-input, but has no stepUp method`);
-    else node.stepUp();
+    node.stepUp();
+    this.targetOnInput(node)
   }
 
   static get styles() {
@@ -61,7 +64,7 @@ export class HasakNumber extends LitElement {
         display: grid;
       }
       sl-input {
-        width: 3em;
+        width: 5em;
       }
       sl-input::part(input) {
         text-align: center;
@@ -90,12 +93,6 @@ export class HasakNumber extends LitElement {
     const [min, max] = range ? range.split(' ') : [undefined, undefined];
     const nrpnValue = this.device.nrpnGet(value);
     // console.log(`hasak-number ${this.device.name} key=${key} nrpn=${value} label=${label} title=${title} range=${range} unit=${unit} value=${nrpnValue} min=${min} max=${max}`);
-    switch (key) {
-      case 'NRPN_VOLUME':
-      case 'NRPN_LEVEL':
-      case 'NRPN_TONE':
-      case 'NRPN_SPEED':
-      default:
         return html` <div class="value">
           <div class="a">
             <sl-icon-button
@@ -106,6 +103,7 @@ export class HasakNumber extends LitElement {
           </div>
           <div class="b">
             <sl-input
+	      hoist
               outline
               type="number"
               value="${nrpnValue}"
@@ -124,7 +122,6 @@ export class HasakNumber extends LitElement {
             ></sl-icon-button>
           </div>
         </div>`;
-    }
   }
 }
 
