@@ -15,6 +15,7 @@ export class HasakSelect extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
+    this.device.nrpn_query(this.key);
     this.device.nrpnListen(
       this.device.props[this.key].value,
       this.itemListener,
@@ -38,21 +39,27 @@ export class HasakSelect extends LitElement {
   }
 
   static get styles() {
-    return css``;
+    return css`
+	  sl-select { width: 75%; margin: auto; }
+	`;
   }
 
   render() {
     const { key } = this;
+    // console.log(`hasak-select key ${key}`);
     const { value, title, values } = this.device.props[key]; // , label
-    const opts = this.device.props[values].split();
+    // console.log(`hasak-select value ${value} title ${title} values ${values}`);
     const nrpnValue = this.device.nrpnGet(value);
-    console.log(`hasak-select ${key} ${opts}`);
+    // console.log(`hasak-select nrpnValue ${nrpnValue}`);
+    const { opts } = this.device.props[values];
+    // console.log(`hasak-select opts ${opts}`);
+    // console.log(`hasak-select ${key} ${opts}`);
     return html`
       <div class="body" title="${title}">
-        <sl-select value="${nrpnValue}">
-          ${opts.map(
+        <sl-select hoist name="${key}" value="${nrpnValue}">
+          ${opts.split(' ').map(
             opt => html`
-              <sl-option value="${this.device.props[opt].value}"
+              <sl-option hoist value="${this.device.props[opt].value}"
                 >${this.device.props[opt].label}</sl-option
               >
             `,
