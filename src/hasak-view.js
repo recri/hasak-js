@@ -4,6 +4,7 @@ import './hasak-checkboxes.js';
 import './hasak-number.js';
 import './hasak-switch.js';
 import './hasak-numbers.js';
+import './hasak-select.js';
 
 export class HasakView extends LitElement {
   static get properties() {
@@ -38,6 +39,16 @@ export class HasakView extends LitElement {
           </div>
         `;
 
+      case 'keyer': // add mode, adapter, swap, automatic spacing
+        return html`
+          <div class="body">
+            <hasak-select
+              .device=${this.device}
+              key="NRPN_PAD_KEYER"
+            ></hasak-select>
+          </div>
+	`;
+      
       case 'fist':
         return html`
           <div class="body">
