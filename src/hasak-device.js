@@ -253,6 +253,8 @@ export class HasakDevice extends LitElement {
     this.ctrlSet(NRPN_LSB, nrpn);
     this.ctrlSet(DATA_MSB, value >> 7);
     this.ctrlSet(DATA_LSB, value);
+    this.ctrlSet(NRPN_MSB, 127);
+    this.ctrlSet(NRPN_LSB, 127);
   }
   /* eslint-enable no-bitwise */
 

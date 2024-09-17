@@ -39,7 +39,7 @@ export class HasakNumber extends LitElement {
   targetOnInput(target) {
     this.device.nrpnSet(this.props.value, target.input.value);
   }
-  
+
   onInput(e) {
     console.log(`onInput e.target.input.value = ${e.target.input.value}`);
     this.targetOnInput(e.target);
@@ -49,13 +49,13 @@ export class HasakNumber extends LitElement {
   stepDown() {
     const node = this.renderRoot.querySelector('sl-input');
     node.stepDown();
-    this.targetOnInput(node)
+    this.targetOnInput(node);
   }
 
   stepUp() {
     const node = this.renderRoot.querySelector('sl-input');
     node.stepUp();
-    this.targetOnInput(node)
+    this.targetOnInput(node);
   }
 
   static get styles() {
@@ -93,35 +93,36 @@ export class HasakNumber extends LitElement {
     const [min, max] = range ? range.split(' ') : [undefined, undefined];
     const nrpnValue = this.device.nrpnGet(value);
     // console.log(`hasak-number ${this.device.name} key=${key} nrpn=${value} label=${label} title=${title} range=${range} unit=${unit} value=${nrpnValue} min=${min} max=${max}`);
-        return html` <div class="value">
-          <div class="a">
-            <sl-icon-button
-              @click=${this.stepDown}
-              label="Step down value"
-              name="minus"
-            ></sl-icon-button>
-          </div>
-          <div class="b">
-            <sl-input
-	      hoist
-              outline
-              type="number"
-              value="${nrpnValue}"
-              min="${min}"
-              max="${max}"
-              @sl-input="${this.onInput}"
-              no-spin-buttons
-              title="${title}"
-            ></sl-input>
-          </div>
-          <div class="c">
-            <sl-icon-button
-              @click=${this.stepUp}
-              label="Step up value"
-              name="plus"
-            ></sl-icon-button>
-          </div>
-        </div>`;
+    return html` <div class="value">
+      <div class="a">
+        <sl-icon-button
+          @click=${this.stepDown}
+          label="Step down value"
+          name="minus"
+        ></sl-icon-button>
+      </div>
+      <div class="b">
+        <sl-input
+          hoist
+          outline
+          type="number"
+          name="${key}"
+          value="${nrpnValue}"
+          min="${min}"
+          max="${max}"
+          @sl-input="${this.onInput}"
+          no-spin-buttons
+          title="${title}"
+        ></sl-input>
+      </div>
+      <div class="c">
+        <sl-icon-button
+          @click=${this.stepUp}
+          label="Step up value"
+          name="plus"
+        ></sl-icon-button>
+      </div>
+    </div>`;
   }
 }
 

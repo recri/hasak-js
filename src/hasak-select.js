@@ -40,8 +40,11 @@ export class HasakSelect extends LitElement {
 
   static get styles() {
     return css`
-	  sl-select { width: 75%; margin: auto; }
-	`;
+      sl-select {
+        width: 75%;
+        margin: auto;
+      }
+    `;
   }
 
   render() {
@@ -57,13 +60,15 @@ export class HasakSelect extends LitElement {
     return html`
       <div class="body" title="${title}">
         <sl-select hoist name="${key}" value="${nrpnValue}">
-          ${opts.split(' ').map(
-            opt => html`
-              <sl-option hoist value="${this.device.props[opt].value}"
-                >${this.device.props[opt].label}</sl-option
-              >
-            `,
-          )}
+          ${opts
+            .split(' ')
+            .map(
+              opt => html`
+                <sl-option hoist value="${this.device.props[opt].value}"
+                  >${this.device.props[opt].label}</sl-option
+                >
+              `,
+            )}
         </sl-select>
       </div>
     `;

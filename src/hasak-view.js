@@ -47,8 +47,8 @@ export class HasakView extends LitElement {
               key="NRPN_PAD_KEYER"
             ></hasak-select>
           </div>
-	`;
-      
+        `;
+
       case 'fist':
         return html`
           <div class="body">
