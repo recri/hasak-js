@@ -1,8 +1,10 @@
 import { LitElement, html, css } from 'lit';
 
+import './hasak-checkbox.js';
+import './hasak-checkboxes.js';
+import './hasak-switch.js';
 import './hasak-switches.js';
 import './hasak-number.js';
-import './hasak-switch.js';
 import './hasak-numbers.js';
 import './hasak-select.js';
 
@@ -73,7 +75,7 @@ export class HasakView extends LitElement {
                 key="NRPN_PAD_ADAPT"
               ></hasak-select>
             </div>
-            <sl-switches
+            <hasak-switches
               .style="width: 95%; margin: auto;"
               .device=${this.device}
               .keys=${['NRPN_PAD_SWAP', 'NRPN_AUTO_ILS', 'NRPN_AUTO_IWS']}
@@ -173,7 +175,7 @@ export class HasakView extends LitElement {
       //    case 'mixens': /* mixer enables */
       //      return html`mixer enables`;
 
-/*
+      /*
       case 'statistics': {
         const keys = [
           'NRPN_MIDI_INPUTS',

@@ -55,7 +55,12 @@ export class HasakSelect extends LitElement {
     // console.log(`hasak-select ${key} ${opts}`);
     return html`
       <div class="body" title="${title}">
-        <sl-select hoist name="${key}" value="${nrpnValue}" @sl-input=${this.onInput}>
+        <sl-select
+          hoist
+          name="${key}"
+          value="${nrpnValue}"
+          @sl-input=${this.onInput}
+        >
           ${opts
             .split(' ')
             .map(

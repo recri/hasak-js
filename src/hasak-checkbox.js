@@ -24,7 +24,7 @@ export class HasakCheckbox extends LitElement {
     this.device.nrpnListen(this.props.value, this.itemListener);
   }
 
-  onChange() {
+  onChange(e) {
     // console.log(`onChange e.target.checked = ${e.target.checked}`);
     this.device.nrpnSet(this.props.value, e.target.checked ? 1 : 0);
   }
@@ -35,17 +35,13 @@ export class HasakCheckbox extends LitElement {
 
   render() {
     const { key } = this;
-    const { value, label, title } = this.props;
+    const { value, label, title } = this.device.props[key];
     const nrpnValue = this.device.nrpnGet(value);
     return html`
       <div class="body" title="${title}">
-        <input
-          name="${key}"
-          type="checkbox"
-          @change="${this.onChange}"
-          ?checked=${nrpnValue !== 0}
-        />
-        <label for="${key}">${label}</label>
+        <sl-checkbox @change=${this.onChange} ?checked=${nrpnValue !== 0}>
+          ${label}
+        </sl-checkbox>
       </div>
     `;
   }
