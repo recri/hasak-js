@@ -25,10 +25,8 @@ export class HasakCheckbox extends LitElement {
   }
 
   onChange() {
-    this.device.nrpnSet(
-      this.props.value,
-      this.device.nrpnGet(this.props.value) === 0 ? 1 : 0,
-    );
+    // console.log(`onChange e.target.checked = ${e.target.checked}`);
+    this.device.nrpnSet(this.props.value, e.target.checked ? 1 : 0);
   }
 
   static get styles() {

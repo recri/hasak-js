@@ -1,9 +1,7 @@
 import { LitElement, html, css } from 'lit';
 
-import './hasak-checkboxes.js';
 import './hasak-switches.js';
 import './hasak-number.js';
-import './hasak-checkbox.js';
 import './hasak-switch.js';
 import './hasak-numbers.js';
 import './hasak-select.js';
@@ -120,10 +118,10 @@ export class HasakView extends LitElement {
         );
         return html`
           <div class="body enables">
-            <hasak-checkboxes
+            <hasak-switches
               .device=${this.device}
               .keys=${keys}
-            ></hasak-checkboxes>
+            ></hasak-switches>
           </div>
         `;
       }

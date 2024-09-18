@@ -27,8 +27,8 @@ export class HasakSwitch extends LitElement {
   }
 
   onChange(e) {
-    console.log(`onChange e.target.input.value = ${e.target.input.value}`);
-    this.device.nrpnSet(this.props.value, e.target.input.value);
+    // console.log(`onChange e.target.checked = ${e.target.checked}`);
+    this.device.nrpnSet(this.props.value, e.target.checked ? 1 : 0);
   }
 
   static get styles() {
@@ -45,7 +45,7 @@ export class HasakSwitch extends LitElement {
     console.log(`hasak-number ${key} ${value} ${label} ${title} ${nrpnValue}`);
     return html`
       <div>
-        <sl-switch @sl-change=${this.onChange} ${nrpnValue ? 'checked' : ''}>
+        <sl-switch @sl-change=${this.onChange} ?checked=${nrpnValue !== 0}>
           ${label}
         </sl-switch>
       </div>
