@@ -45,7 +45,7 @@ export class HasakSwitch extends LitElement {
     console.log(`hasak-number ${key} ${value} ${label} ${title} ${nrpnValue}`);
     return html`
       <div>
-        <sl-switch @change=${this.onChange} ${nrpnValue ? 'checked' : ''}>
+        <sl-switch @sl-change=${this.onChange} ${nrpnValue ? 'checked' : ''}>
           ${label}
         </sl-switch>
       </div>
