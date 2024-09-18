@@ -13,7 +13,15 @@ export class HasakCheckboxes extends LitElement {
   }
 
   static get styles() {
-    return css``;
+    return css`
+      div.body {
+        width: 85%;
+        margin: auto;
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: space-evenly;
+      }
+    `;
   }
 
   itemListener = () => this.requestUpdate();

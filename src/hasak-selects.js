@@ -52,18 +52,12 @@ export class HasakSelects extends LitElement {
     );
   }
 
-  selectss() {
+  selects() {
     return this.keys.map(
       key =>
         html`<div class="value">
           <hasak-select key="${key}" .device=${this.device}></hasak-select>
         </div>`,
-    );
-  }
-
-  units() {
-    return this.keys.map(
-      key => html`<div class="units">${this.device.getUnit(key)}</div>`,
     );
   }
 
@@ -89,7 +83,7 @@ export class HasakSelects extends LitElement {
           .slice(0, this.keys.length)
           .join(' ')}";
       </style>
-      <div class="body">${this.labels()} ${this.values()}</div>
+      <div class="body">${this.labels()} ${this.selects()}</div>
     `;
   }
 }

@@ -1,5 +1,7 @@
 import { LitElement, html, css } from 'lit';
 
+import '@shoelace-style/shoelace/dist/components/switch/switch.js';
+
 export class HasakSwitch extends LitElement {
   static get properties() {
     return {
@@ -43,13 +45,9 @@ export class HasakSwitch extends LitElement {
     console.log(`hasak-number ${key} ${value} ${label} ${title} ${nrpnValue}`);
     return html`
       <div>
-        <input
-          name="${key}"
-          type="checkbox"
-          @change=${this.onChange}
-          ${nrpnValue ? 'checked' : ''}
-        />
-        <label for="${key}">${label}</label>
+        <sl-switch @change=${this.onChange} ${nrpnValue ? 'checked' : ''}>
+          ${label}
+        </sl-switch>
       </div>
     `;
   }

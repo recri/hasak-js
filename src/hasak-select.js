@@ -31,11 +31,7 @@ export class HasakSelect extends LitElement {
   }
 
   onInput(e) {
-    const nrpn = this.device.props[this.key].value;
-    const valueKey = e.target.select.value;
-    const { value } = this.device.props[valueKey];
-    console.log(`onInput e.target.select.value = ${valueKey}`);
-    this.device.nrpnSet(nrpn, value);
+    this.device.nrpnSet(this.device.props[this.key].value, e.target.value);
   }
 
   static get styles() {
@@ -59,7 +55,7 @@ export class HasakSelect extends LitElement {
     // console.log(`hasak-select ${key} ${opts}`);
     return html`
       <div class="body" title="${title}">
-        <sl-select hoist name="${key}" value="${nrpnValue}">
+        <sl-select hoist name="${key}" value="${nrpnValue}" @sl-input=${this.onInput}>
           ${opts
             .split(' ')
             .map(

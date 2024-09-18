@@ -521,9 +521,9 @@ export class HasakDevice extends LitElement {
     if (this.props)
       return html`
         <hr />
-        <hasak-view .device=${this} view="min"></hasak-view>
+        <hasak-view .device=${this} view="minimum"></hasak-view>
         <hr />
-        <hasak-view .device=${this} view="keyer"></hasak-view>
+        <hasak-view .device=${this} view="paddle"></hasak-view>
         <hr />
         <hasak-view .device=${this} view="fist"></hasak-view>
         <hr />
@@ -532,8 +532,6 @@ export class HasakDevice extends LitElement {
         <hasak-view .device=${this} view="enables"></hasak-view>
         <hr />
         <hasak-view .device=${this} view="ptt"></hasak-view>
-        <hr />
-        <hasak-view .device=${this} view="ramp"></hasak-view>
         <hr />
         <hasak-view .device=${this} view="levels"></hasak-view>
         <hr />
