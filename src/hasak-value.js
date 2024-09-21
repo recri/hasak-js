@@ -3,25 +3,24 @@ import { LitElement, html, css } from 'lit';
 export class HasakValue extends LitElement {
   static get properties() {
     return {
-      device: { type: Object }, // parent device
+      device: { type: Object },
       key: { type: String },
     };
-  }
-
-  get props() {
-    return this.device.props[this.key];
   }
 
   itemListener = () => this.requestUpdate();
 
   connectedCallback() {
     super.connectedCallback();
-    this.device.nrpnListen(this.props.value, this.itemListener);
+    const nrpn = this.device.props[this.key].value;
+    this.device.nrpnQuery(nrpn);
+    this.device.nrpnListen(nrpn, this.itemListener);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    this.device.nrpnListen(this.props.value, this.itemListener());
+    const nrpn = this.device.props[this.key].value;
+    this.device.nrpnListen(nrpn, this.itemListener());
   }
 
   static get styles() {
@@ -29,13 +28,16 @@ export class HasakValue extends LitElement {
   }
 
   render() {
-    const { key } = this;
-    const { value, title } = this.props;
-    const nrpnValue = this.device.nrpnGet(value);
-    console.log(
-      `hasak-value ${this.device.name} key=${key} nrpn=${value} title=${title} value=${nrpnValue}`,
-    );
-    return html` <div class="value" title="${title}">${nrpnValue}</div> `;
+    const { key } = this; 
+    if ( ! key ) { console.log("hasak-value no key"); return html``; }
+    const props = this.device.props[key];
+    if ( ! props ) { console.log(`hasak-value no props for ${key}`); return html``; }
+    const { value, title } = this.device.props[this.key];
+    const nrpn = value;
+    if ( ! nrpn ) { console.log(`hasak-value no value for ${key}`); return html``; }
+    const nrpnValue = this.device.nrpnGet(nrpn);
+    // console.log(`hasak-value ${this.device.name} key=${key} nrpn=${value} title=${title} value=${nrpnValue}`);
+    return html`<div class="value" title="${title}">${nrpnValue}</div>`;
   }
 }
 

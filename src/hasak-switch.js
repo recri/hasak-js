@@ -36,15 +36,13 @@ export class HasakSwitch extends LitElement {
   }
 
   render() {
-    console.log(
-      `hasak-switch[${this.device.name}, ${this.key}, ${this.props}]`,
-    );
-    const { key } = this;
+    // console.log(`hasak-switch[${this.device.name}, ${this.key}, ${this.props}]`);
+    // const { key } = this;
     const { value, label, title } = this.props;
     const nrpnValue = this.device.nrpnGet(value);
-    console.log(`hasak-number ${key} ${value} ${label} ${title} ${nrpnValue}`);
+    // console.log(`hasak-switch ${key} ${value} ${label} ${title} ${nrpnValue}`);
     return html`
-      <div>
+      <div title="${title}">
         <sl-switch @sl-change=${this.onChange} ?checked=${nrpnValue !== 0}>
           ${label}
         </sl-switch>

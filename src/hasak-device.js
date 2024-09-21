@@ -35,6 +35,11 @@ import { LitElement, html, css } from 'lit';
 import { hasakProperties as hasakProperties100 } from './hasakProperties100.js';
 import { hasakProperties110 } from './hasakProperties110.js';
 
+import '@shoelace-style/shoelace/dist/components/select/select.js';
+import '@shoelace-style/shoelace/dist/components/option/option.js';
+import '@shoelace-style/shoelace/dist/components/icon/icon.js';
+import '@shoelace-style/shoelace/dist/components/icon-button/icon-button.js';
+
 import './hasak-view.js';
 
 const NOTE_ON = 0x90;
@@ -146,7 +151,6 @@ export class HasakDevice extends LitElement {
   // listener must be a function whose value persists
   // not one constructed in the call
   //
-
   noteListen(index, listener) {
     if (index === '*') this.allNoteListeners.push(listener);
     else if (!this.noteListeners[index]) this.noteListeners[index] = [listener];
@@ -171,21 +175,24 @@ export class HasakDevice extends LitElement {
   // not one constructed in the call
   //
   noteUnlisten(index, listener) {
-    if (index === '*') this.allNoteListeners.remove(listener);
-    else if (this.noteListeners[index])
-      this.noteListeners[index].remove(listener);
+    if (index === '*') 
+      this.allNoteListeners = this.allNoteListeners.filter(item => item !== listener);
+    else
+      this.noteListeners[index] = this.notelisteners.filter[index].filter(item => item !== listener);
   }
 
   ctrlUnlisten(index, listener) {
-    if (index === '*') this.allCtrlListeners.remove(listener);
-    else if (this.ctrlListeners[index])
-      this.ctrlListeners[index].remove(listener);
+    if (index === '*') 
+      this.allCtrlListeners = this.allCtrlListeners.filter(item => item !== listener);
+    else
+      this.ctrlListeners[index] = this.ctrlListeners[index].filter(item => item  !== listener);
   }
 
   nrpnUnlisten(index, listener) {
-    if (index === '*') this.allNrpnListeners.remove(listener);
-    else if (this.nrpnListeners[index])
-      this.nrpnListeners[index].remove(listener);
+    if (index === '*') 
+      this.allNrpnListeners = this.allNrpnListeners.filter(item => item !== listener);
+    else
+      this.nrpnListeners[index] = this.nrpnListeners[index].filter(item => item !== listener);
   }
 
   //
@@ -308,9 +315,7 @@ export class HasakDevice extends LitElement {
           case NRPN_MSB:
             break;
           default:
-            console.log(
-              `*deviceListener(${this.msgString(type, tindex, oldval)})`,
-            );
+            // console.log(`*deviceListener(${this.msgString(type, tindex, oldval)})`);
             break;
         }
         break;
@@ -398,9 +403,7 @@ export class HasakDevice extends LitElement {
             break;
           }
           default:
-            console.log(
-              `*deviceListener(${this.msgString(type, tindex, oldval)})`,
-            );
+            // console.log(`*deviceListener(${this.msgString(type, tindex, oldval)})`);
             break;
         }
         break;
@@ -418,13 +421,11 @@ export class HasakDevice extends LitElement {
     return {
       name: { type: String },
       midi: { type: Object },
-      views: { type: Array },
       props: { type: Object },
+      deleted: { type: Boolean },
+      views: { type: Array },
+      selected: { type: Array },
     };
-  }
-
-  viewCallback(name, view) {
-    this.views[name] = view;
   }
 
   connectedCallback() {
@@ -479,20 +480,20 @@ export class HasakDevice extends LitElement {
   }
 
   nrpnGetFromKey(key) {
-    return this.getNrpn(this.getValue(key));
+    return this.nrpnGet(this.getValue(key));
   }
 
   nrpnSetFromKey(key, value) {
-    this.setNrpn(this.getValue(key), value);
+    this.nrpnSet(this.getValue(key), value);
   }
 
   nrpn_query(key) {
-    console.log(`nrpn_query(${key}) ${this.getValue(key)}`);
+    // console.log(`nrpn_query(${key}) ${this.getValue(key)}`);
     this.nrpnQuery(this.getValue(key));
   }
 
   nrpn_query_list(keys) {
-    keys.forEach(key => this.nrpn_query(key));
+    keys.flat().forEach(key => this.nrpn_query(key));
   }
 
   constructor() {
@@ -509,53 +510,104 @@ export class HasakDevice extends LitElement {
     this.ctrlListeners = [];
     this.nrpnListeners = [];
     this._props = null;
-    this.views = { raw: null, json: null, complete: null, min: null };
+    this.deleted = false;
+    this.views = [ "minimum", "paddle", "fist", "envelope",
+		   "enables", "ptt", "levels", "misc", "pinput",
+		   "poutput", "padcmap", "mixens", "mixers",
+		   "wm8960", "statistics" ];
+    this.selected = [ 'minimum' ];
   }
 
   static get styles() {
-    return css``;
+    return css`
+	div.device {
+	  width: 90%;
+	  margin: auto;
+	  display: flex;
+	  flex-flow: row nowrap;
+	}
+	sl-select, sl-option {
+	  width: 60%;
+	}
+	hasak-view.shown { display: block; }
+	hasak-view.hidden { display: none; }
+	`;
   }
 
+  onInput(e) {
+    // console.log(`onInput e.target.value = ${e.target.value}`);
+    this.selected = e.target.value;
+  }
+
+  deleteDevice() {
+    // console.log(`deleteDevice`);
+    this.deleted = true;
+  }
+  
   render() {
-    console.log(`hasak-device render with props ${this.props}`);
-    if (this.props)
+    // console.log(`hasak-device render with props ${this.props}`);
+    if (this.deleted) {
+      return html``;
+    }
+
+    if (this.props) {
       return html`
-        <hr />
-        <hasak-view .device=${this} view="minimum"></hasak-view>
-        <hr />
-        <hasak-view .device=${this} view="paddle"></hasak-view>
-        <hr />
-        <hasak-view .device=${this} view="fist"></hasak-view>
-        <hr />
-        <hasak-view .device=${this} view="envelope"></hasak-view>
-        <hr />
-        <hasak-view .device=${this} view="enables"></hasak-view>
-        <hr />
-        <hasak-view .device=${this} view="ptt"></hasak-view>
-        <hr />
-        <hasak-view .device=${this} view="levels"></hasak-view>
-        <hr />
-        <hasak-view .device=${this} view="misc"></hasak-view>
-        <hr />
-        <hasak-view .device=${this} view="pinput"></hasak-view>
-        <hr />
-        <hasak-view .device=${this} view="poutput"></hasak-view>
-        <hr />
-        <hasak-view .device=${this} view="padcmap"></hasak-view>
-        <hr />
-        <hasak-view .device=${this} view="mixens"></hasak-view>
-        <hr />
-        <hasak-view .device=${this} view="mixers"></hasak-view>
-        <hr />
-        <hasak-view .device=${this} view="wm8960"></hasak-view>
-        <hr />
-        <hasak-view .device=${this} view="statistics"></hasak-view>
+	<hr/>
+	<hr/>
+	<div class="device">
+	  <sl-icon-button
+	     name="x-square" 
+	     label="Remove this device listing"
+	     title="Remove this device listing"
+	     @click=${this.deleteDevice}>
+	  </sl-icon-button>
+	  <sl-divider vertical></sl-divider>
+	  <span title="The name of this MIDI device.">${this.name}</span>
+	  <sl-divider vertical></sl-divider>
+	  <sl-select
+	    name="device"
+	    title="Select the component(s) of the controller."
+            .value=${this.selected}
+            @sl-input=${this.onInput}
+	    multiple
+	    size="small">
+	      ${this.views.map(view => html`
+		<sl-option
+		  value="${view}" 
+		  size="small">
+		    ${view}
+		</sl-option>`)}
+	  </sl-select>
+	</div>
+	${this.views.map(view =>
+	  html`
+	    <hasak-view 
+	      .device=${this} 
+	      view="${view}" 
+	      class="view ${this.selected.includes(view) ? 'shown' : 'hidden'}">
+	    </hasak-view>`
+	  )}
       `;
-    return html`${this.name}`;
+    }
+
+    return html`
+      <hr/>
+      <hr/>
+      <div class="device">
+	<sl-icon-button
+	  name="x-square" 
+	  label="Remove this device listing"
+	  title="Remove this device listing"
+	  @click=${this.deleteDevice}>
+	</sl-icon-button>
+	<sl-divider vertical></sl-divider>
+	<span title="The name of this MIDI device.">${this.name}</span>
+	<sl-divider vertical></sl-divider>
+	<span>Not a recognized device</span>
+      </div>	
+    `;
   }
 }
-/* 	<hr/>
- */
 
 customElements.define('hasak-device', HasakDevice);
 

@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit';
+
 import './hasak-midi.js';
 
 export class HasakJs extends LitElement {
@@ -68,7 +69,7 @@ export class HasakJs extends LitElement {
       <main>
         <div class="app-bar">
           <img
-            src="../assets/app-icons/keyer-logo-512x128.svg"
+            src="/assets/app-icons/keyer-logo-512x128.svg"
             alt="A keyer icon"
             style="width:96px;height:24px"
           />

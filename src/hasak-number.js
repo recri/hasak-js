@@ -60,40 +60,73 @@ export class HasakNumber extends LitElement {
 
   static get styles() {
     return css`
+      div.number {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+      }
       div.value {
-        display: grid;
+	display: flex;
+	justify-content: center;
+	font-size: larger;
+      }
+      div.label, div.unit {
+	font-size: smaller;
       }
       sl-input {
-        width: 5em;
+        width: 4em;
       }
       sl-input::part(input) {
         text-align: center;
-      }
-      div.a {
-        grid-row: 1;
-        grid-column: 1;
-      }
-      div.b {
-        grid-row: 1;
-        grid-column: 2;
-      }
-      div.c {
-        grid-row: 1;
-        grid-column: 3;
-      }
-      sl-icon-button {
-        font-size: 0.5rem;
       }
     `;
   }
 
   render() {
     const { key } = this;
-    const { value, title, range } = this.props; // , label, unit
+    const { value, title, range, label, unit } = this.props;
     const [min, max] = range ? range.split(' ') : [undefined, undefined];
     const nrpnValue = this.device.nrpnGet(value);
     // console.log(`hasak-number ${this.device.name} key=${key} nrpn=${value} label=${label} title=${title} range=${range} unit=${unit} value=${nrpnValue} min=${min} max=${max}`);
-    return html` <div class="value">
+    return html`
+      <div class="number" title="${title}">
+	<div class="label">
+	  ${label}
+	</div>
+	<div class="value">
+          <sl-input
+            type="number"
+            name="${key}"
+            title="${title}"
+            value="${nrpnValue}"
+            min="${min}"
+            max="${max}"
+            @sl-input="${this.onInput}">
+	</div>
+	<div class="unit">
+	  ${unit}
+	</div>
+      </div>
+    `;
+  }
+}
+
+/*
+  	    no-spin-buttons
+
+	      <sl-icon-button 
+	        class="down" 
+	        name="arrow-down"
+	        @click=${this.stepDown}>
+	      </sl-icon-button>
+	  </sl-input>
+	      <sl-icon-button
+	        class="up"
+	        name="arrow-up"
+	        @click=${this.stepUp}>
+	      </sl-icon-button>
+
+        <div class="value">
       <div class="a">
         <sl-icon-button
           @click=${this.stepDown}
@@ -122,11 +155,26 @@ export class HasakNumber extends LitElement {
           name="plus"
         ></sl-icon-button>
       </div>
-    </div>`;
-  }
-}
+    </div>
 
+      sl-icon-button {
+	display: block-inline;
+        font-size: 1em;
+	z-index: 1;
+      }
+      sl-icon-button.up {
+	position: relative;
+	left: -1.5em;
+      }      
+      sl-icon-button.down {
+	position: relative;
+	left: +1.5em;
+	z-index: 1;
+      }      
+
+*/
 customElements.define('hasak-number', HasakNumber);
+
 
 // Local Variables:
 // mode: JavaScript

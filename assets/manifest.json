@@ -6,7 +6,7 @@
   "display": "standalone",
   "theme_color": "#070707",
   "background_color": "#070707",
-  "manifest_version": "4",
+  "manifest_version": "7",
   "icons": [
     {
       "src": "app-icons/keyer-logo-512x128",
