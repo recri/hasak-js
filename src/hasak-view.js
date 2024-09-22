@@ -182,7 +182,7 @@ export class HasakView extends LitElement {
 	["NRPN_MIX_EN_HDW_L0", "NRPN_MIX_EN_HDW_L1", "NRPN_MIX_EN_HDW_L2", "NRPN_MIX_EN_HDW_L3"], 
 	["NRPN_MIX_EN_HDW_R0", "NRPN_MIX_EN_HDW_R1", "NRPN_MIX_EN_HDW_R2", "NRPN_MIX_EN_HDW_R3"]
       ];
-      console.log("rendering mixer enable matrix");
+      // console.log("rendering mixer enable matrix");
       return html`<hasak-value-matrix 
 		    .device=${this.device} 
 		    xtitle="mixer enable matrix"
@@ -203,7 +203,7 @@ export class HasakView extends LitElement {
 	["NRPN_MIX_HDW_L0", "NRPN_MIX_HDW_L1", "NRPN_MIX_HDW_L2", "NRPN_MIX_HDW_L3"], 
 	["NRPN_MIX_HDW_R0", "NRPN_MIX_HDW_R1", "NRPN_MIX_HDW_R2", "NRPN_MIX_HDW_R3"]
       ];
-      console.log("rendering level mixer matrix");
+      // console.log("rendering level mixer matrix");
       return html`<hasak-value-matrix 
 		    .device=${this.device} 
 		    xtitle="mixer level matrix"

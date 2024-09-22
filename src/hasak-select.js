@@ -59,15 +59,19 @@ export class HasakSelect extends LitElement {
           hoist
           name="${key}"
           value="${nrpnValue}"
+	  size="small"
           @sl-input=${this.onInput}
         >
           ${opts
             .split(' ')
             .map(
               opt => html`
-                <sl-option hoist value="${this.device.props[opt].value}"
-                  >${this.device.props[opt].label}</sl-option
-                >
+                <sl-option 
+		  hoist
+		  value="${this.device.props[opt].value}"
+		  size="small">
+                    ${this.device.props[opt].label}
+		</sl-option>
               `,
             )}
         </sl-select>

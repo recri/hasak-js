@@ -503,6 +503,9 @@ export class HasakDevice extends LitElement {
     this.notes = {}; // note state map
     this.ctrls = {}; // control change state map
     this.nrpns = {}; // nrpn state map
+    this.noteCounts = {};	// note statistics
+    this.ctrlCounts = {};	// control change statistics
+    this.nrpnCounts = {};	// nrpn statistics
     this.allNoteListeners = [];
     this.allCtrlListeners = [];
     this.allNrpnListeners = [];
@@ -511,10 +514,11 @@ export class HasakDevice extends LitElement {
     this.nrpnListeners = [];
     this._props = null;
     this.deleted = false;
-    this.views = [ "minimum", "paddle", "fist", "envelope",
-		   "enables", "ptt", "levels", "misc", "pinput",
-		   "poutput", "padcmap", "mixens", "mixers",
-		   "wm8960", "statistics" ];
+    this.otherViews = [ "basestats", "notevals", "ctrlvals", "nrpnvals" ];
+    this.hasakViews = [ 
+      "minimum", "paddle", "fist", "envelope", "enables", "ptt", "levels",
+      "misc", "pinput", "poutput", "padcmap", "mixens", "mixers", "wm8960",
+      "statistics", "basestats", "notevals", "ctrlvals", "nrpnvals" ];
     this.selected = [ 'minimum' ];
   }
 
@@ -526,9 +530,7 @@ export class HasakDevice extends LitElement {
 	  display: flex;
 	  flex-flow: row nowrap;
 	}
-	sl-select, sl-option {
-	  width: 60%;
-	}
+	sl-select { width: 90%; }
 	hasak-view.shown { display: block; }
 	hasak-view.hidden { display: none; }
 	`;
@@ -551,19 +553,11 @@ export class HasakDevice extends LitElement {
     }
 
     if (this.props) {
+      const views = this.hasakViews;
       return html`
 	<hr/>
 	<hr/>
 	<div class="device">
-	  <sl-icon-button
-	     name="x-square" 
-	     label="Remove this device listing"
-	     title="Remove this device listing"
-	     @click=${this.deleteDevice}>
-	  </sl-icon-button>
-	  <sl-divider vertical></sl-divider>
-	  <span title="The name of this MIDI device.">${this.name}</span>
-	  <sl-divider vertical></sl-divider>
 	  <sl-select
 	    name="device"
 	    title="Select the component(s) of the controller."
@@ -571,7 +565,7 @@ export class HasakDevice extends LitElement {
             @sl-input=${this.onInput}
 	    multiple
 	    size="small">
-	      ${this.views.map(view => html`
+	      ${views.map(view => html`
 		<sl-option
 		  value="${view}" 
 		  size="small">
@@ -579,7 +573,7 @@ export class HasakDevice extends LitElement {
 		</sl-option>`)}
 	  </sl-select>
 	</div>
-	${this.views.map(view =>
+	${views.map(view =>
 	  html`
 	    <hasak-view 
 	      .device=${this} 
