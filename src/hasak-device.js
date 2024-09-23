@@ -341,9 +341,7 @@ export class HasakDevice extends LitElement {
                 // } else {
                 // console.log('avoided duplicate JSON string request');
                 // }
-              } else if (
-                this.nrpnGet(NRPN_ID_DEVICE) >= VAL_HASAK1_ID_VERSION
-              ) {
+              } else if (this.nrpnGet(NRPN_ID_DEVICE) >= VAL_HASAK1_ID_VERSION) {
                 // pull props from canned image
                 console.log('fetching local copy of props v100');
                 this.props = hasakProperties100;
@@ -351,6 +349,10 @@ export class HasakDevice extends LitElement {
                 // don't know what this means
                 console.log('what?');
               }
+	      if (this.props) {
+		this.selected = this.hasakSelected;
+		this.views = this.hasakViews;
+	      }
             }
             break;
           case NRPN_STRING_START:
@@ -422,7 +424,6 @@ export class HasakDevice extends LitElement {
       name: { type: String },
       midi: { type: Object },
       props: { type: Object },
-      deleted: { type: Boolean },
       views: { type: Array },
       selected: { type: Array },
     };
@@ -513,13 +514,18 @@ export class HasakDevice extends LitElement {
     this.ctrlListeners = [];
     this.nrpnListeners = [];
     this._props = null;
-    this.deleted = false;
-    this.otherViews = [ "basestats", "notevals", "ctrlvals", "nrpnvals" ];
+    this.otherSelected = [ 'device-info' ];
+    this.otherViews = [
+      "device-info", "midi-stats", "midi-notes", "midi-ctrls", "midi-nrpns"
+    ];
+    this.hasakSelected = [ 'minimum' ];
     this.hasakViews = [ 
       "minimum", "paddle", "fist", "envelope", "enables", "ptt", "levels",
       "misc", "pinput", "poutput", "padcmap", "mixens", "mixers", "wm8960",
-      "statistics", "basestats", "notevals", "ctrlvals", "nrpnvals" ];
-    this.selected = [ 'minimum' ];
+      "statistics", "device-info", "midi-stats", "midi-notes", "midi-ctrls", "midi-nrpns"
+    ];
+    this.selected = this.otherSelected;
+    this.views = this.otherViews;
   }
 
   static get styles() {
@@ -541,27 +547,16 @@ export class HasakDevice extends LitElement {
     this.selected = e.target.value;
   }
 
-  deleteDevice() {
-    // console.log(`deleteDevice`);
-    this.deleted = true;
-  }
-  
   render() {
     // console.log(`hasak-device render with props ${this.props}`);
-    if (this.deleted) {
-      return html``;
-    }
+    const { selected, views } = this;
 
-    if (this.props) {
-      const views = this.hasakViews;
-      return html`
-	<hr/>
-	<hr/>
+    return html`
 	<div class="device">
 	  <sl-select
 	    name="device"
 	    title="Select the component(s) of the controller."
-            .value=${this.selected}
+            .value=${selected}
             @sl-input=${this.onInput}
 	    multiple
 	    size="small">
@@ -582,24 +577,7 @@ export class HasakDevice extends LitElement {
 	    </hasak-view>`
 	  )}
       `;
-    }
-
-    return html`
-      <hr/>
-      <hr/>
-      <div class="device">
-	<sl-icon-button
-	  name="x-square" 
-	  label="Remove this device listing"
-	  title="Remove this device listing"
-	  @click=${this.deleteDevice}>
-	</sl-icon-button>
-	<sl-divider vertical></sl-divider>
-	<span title="The name of this MIDI device.">${this.name}</span>
-	<sl-divider vertical></sl-divider>
-	<span>Not a recognized device</span>
-      </div>	
-    `;
+    
   }
 }
 

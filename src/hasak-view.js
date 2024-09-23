@@ -7,10 +7,12 @@ import './hasak-numbers.js';
 import './hasak-select.js';
 import './hasak-switch.js';
 import './hasak-switches.js';
+import './hasak-titled-values.js';
 import './hasak-value.js';
 import './hasak-value-matrix.js';
 
 import '@shoelace-style/shoelace/dist/components/divider/divider.js';
+import '@shoelace-style/shoelace/dist/components/button/button.js';
 
 export class HasakView extends LitElement {
   static get properties() {
@@ -39,8 +41,8 @@ export class HasakView extends LitElement {
     if (!this.device) return html`hasak ?device? ${this.view}`;
     if (!this.device.props) return html`${this.device.name} ${this.view}`;
     switch (this.view) {
-      case 'minimum':
-        return html`
+    case 'minimum':
+      return html`
           <div class="body">
 	    <hr/>
             <hasak-numbers
@@ -55,8 +57,8 @@ export class HasakView extends LitElement {
           </div>
         `;
 
-      case 'paddle': // add mode, adapter, swap, automatic spacing
-        return html`
+    case 'paddle': // add mode, adapter, swap, automatic spacing
+      return html`
           <div class="body paddle">
 	    <hr/>
             <div class="flexrow">
@@ -86,8 +88,8 @@ export class HasakView extends LitElement {
           </div>
         `;
 
-      case 'fist':
-        return html`
+    case 'fist':
+      return html`
           <div class="body fist">
 	    <hr/>
             <hasak-numbers
@@ -97,25 +99,25 @@ export class HasakView extends LitElement {
           </div>
         `;
 
-      case 'enables': {
-        const keys = [
-	  /* these have to do with midi handling, rare user interest */
-          'NRPN_INPUT_ENABLE','NRPN_OUTPUT_ENABLE','NRPN_ECHO_ENABLE','NRPN_LISTENER_ENABLE',
-	  /* these are pin mode enables, starting input, output, and adc input */
-          'NRPN_PIN_ENABLE', 'NRPN_POUT_ENABLE', 'NRPN_PADC_ENABLE',
-	  /* these are operation enables */
-          'NRPN_ST_ENABLE', 'NRPN_TX_ENABLE', 'NRPN_IQ_ENABLE', 'NRPN_RX_MUTE',
-	  /* these are capabilities/requirements */
-          'NRPN_PTT_REQUIRE', 'NRPN_RKEY_ENABLE', 
-	  /* these are ptt options */
-	  'NRPN_CW_AUTOPTT','NRPN_MIC_HWPTT','NRPN_CW_HWPTT',
-        ];
-        keys.forEach(
-          key =>
-            this.device.props[key] ||
-            console.log(`there is no ${key} in properties`),
-        );
-        return html`
+    case 'enables': {
+      const keys = [
+	/* these have to do with midi handling, rare user interest */
+        'NRPN_INPUT_ENABLE','NRPN_OUTPUT_ENABLE','NRPN_ECHO_ENABLE','NRPN_LISTENER_ENABLE',
+	/* these are pin mode enables, starting input, output, and adc input */
+        'NRPN_PIN_ENABLE', 'NRPN_POUT_ENABLE', 'NRPN_PADC_ENABLE',
+	/* these are operation enables */
+        'NRPN_ST_ENABLE', 'NRPN_TX_ENABLE', 'NRPN_IQ_ENABLE', 'NRPN_RX_MUTE',
+	/* these are capabilities/requirements */
+        'NRPN_PTT_REQUIRE', 'NRPN_RKEY_ENABLE', 
+	/* these are ptt options */
+	'NRPN_CW_AUTOPTT','NRPN_MIC_HWPTT','NRPN_CW_HWPTT',
+      ];
+      keys.forEach(
+        key =>
+        this.device.props[key] ||
+          console.log(`there is no ${key} in properties`),
+      );
+      return html`
           <div class="body enables">
 	    <hr/>
             <hasak-switches
@@ -124,10 +126,10 @@ export class HasakView extends LitElement {
             ></hasak-switches>
           </div>
         `;
-      }
+    }
 
-      case 'envelope':
-        return html`
+    case 'envelope':
+      return html`
           <div class="body envelope">
 	    <hr/>
             <hasak-numbers
@@ -151,7 +153,7 @@ export class HasakView extends LitElement {
         `;
 
     case 'ptt':
-        return html`
+      return html`
           <div class="body ptt">
 	    <hr/>
             <hasak-numbers
@@ -213,25 +215,25 @@ export class HasakView extends LitElement {
 		  </hasak-value-matrix>`;
     }
     case 'statistics': {
-        const keys = [
-          'NRPN_MIDI_INPUTS',
-          'NRPN_MIDI_OUTPUTS',
-          'NRPN_MIDI_ECHOES',
-          'NRPN_MIDI_SENDS',
-          'NRPN_MIDI_NOTES',
-          'NRPN_MIDI_CTRLS',
-          'NRPN_MIDI_NRPNS',
-          'NRPN_LISTENER_NODES',
-          'NRPN_LISTENER_LISTS',
-          'NRPN_LISTENER_CALLS',
-          'NRPN_LISTENER_FIRES',
-          'NRPN_LISTENER_LOOPS',
-        ];
-        const statistics = key => html`
+      const keys = [
+        'NRPN_MIDI_INPUTS',
+        'NRPN_MIDI_OUTPUTS',
+        'NRPN_MIDI_ECHOES',
+        'NRPN_MIDI_SENDS',
+        'NRPN_MIDI_NOTES',
+        'NRPN_MIDI_CTRLS',
+        'NRPN_MIDI_NRPNS',
+        'NRPN_LISTENER_NODES',
+        'NRPN_LISTENER_LISTS',
+        'NRPN_LISTENER_CALLS',
+        'NRPN_LISTENER_FIRES',
+        'NRPN_LISTENER_LOOPS',
+      ];
+      const statistics = key => html`
           <hasak-value key="${key}" .device=${this.device}></hasak-value>
         `;
-        // this.device.nrpn_query_list(keys);
-        return html`
+      // this.device.nrpn_query_list(keys);
+      return html`
           <div class="body statistics">
 	    <hr/>
             <div class="flexrow">${keys.map(key => statistics(key))}</div>
@@ -242,10 +244,27 @@ export class HasakView extends LitElement {
             </sl-button>
           </div>
         `;
-      }
+    }
 
-      default:
-        return html`
+    case 'device-info':
+      if (this.device.props) {
+	const keys = [
+	  "NRPN_NRPN_SIZE", "NRPN_MSG_SIZE", "NRPN_SAMPLE_RATE", "NRPN_EEPROM_LENGTH", "NRPN_ID_CPU", "NRPN_ID_CODEC"
+	];
+	return html`
+	  <div class="body">
+	    <hasak-titled-values .device=${this.device} .keys=${keys}></hasak-titled-values>
+	  </div>
+	`;
+      }
+      return html`<div><p>no device info for ${this.device.name}</div>`;
+      
+    case 'midi-stats':
+    case 'midi-notes':
+    case 'midi-ctrls':
+    case 'midi-nrpns':
+    default:
+      return html`
 	  <div class="body ${this.view}">
 	    <hr/>
 	    <span>hasak-view - ${this.device.name} - ${this.view}</span>
