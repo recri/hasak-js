@@ -1,5 +1,5 @@
 # hasak-js
-[[https://hasak.elf.org][A controller for Hasak keyers.]]
+[A controller for Hasak keyers.](https://hasak.elf.org)
 
 Hasak-js is a web application which should run on any device which runs a web browser.
 [At the moment it is only fully functional on desktop computer browsers.  The problem
