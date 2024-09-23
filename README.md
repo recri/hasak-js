@@ -1,28 +1,40 @@
 # hasak-js
-A controller for Hasak keyers.
+<a src="https://hasak.elf.org">A controller for Hasak keyers.</a>
 
-Hasak-js is a web application which can run on any device which runs a web browser.  It will
-only work on web browsers which support the Web MIDI API, such as Google Chrome.  It can 
-control any hasak based keyer which is plugged into a USB port on the device.  It can be
- installed on the device so it is available even when disconnected from the internet.
+Hasak-js is a web application which should run on any device which runs a web browser.
+[At the moment it is only fully functional on desktop computer browsers.  The problem
+with Android and ChromeOS browsers is being investigated.]
+
+It requires a web browser which supports the Web MIDI API, such as Google Chrome.
+But most modern browsers are based on Google's Chromium project and they work.
+
+It will find any MIDI device which is plugged into a USB port on the device.  It can display
+basic MIDI information about any device, but it will also detect and control any hasak based
+keyer that it finds.
+
+There is a problem with the tools shipped with KxStudio on Linux.  They somehow interfere with
+hasak discovering or connecting to MIDI devices.  Stopping the jackd server supplied by KxStudio
+will work around the problem.  There is no such problem running jackd on Ubuntu 24.04.
+
+It can be installed on the device so it is available even when disconnected from the internet.
 
 [![Built with open-wc recommendations](https://img.shields.io/badge/built%20with-open--wc-blue.svg)](https://github.com/open-wc)
 
 ## startup
-Hasak-js finds hasak keyers by their MIDI handles. 
+Hasak-js finds the connected MIDI devices through the Web MIDI API. 
 
-For each keyer found it displays the MIDI handle, the keyer speed (WPM),
-master level (%), sidetone level (%), sidetone frequency (Hz), and a gear
-icon.
+It constructs a menu which allows one of the devices to be selected for inspection.  Selecting
+a device constructs a second menu for selecting which informational panels or controls should
+be displayed for the device.
 
-The displayed values can be manipulated by grabbing and dragging or 
-by hovering and mousewheeling.
+If the selected device is a hasak keyer, then by default a 'minimum' control panel is displayed.
+The mininum controls set the keyer speed (WPM), master volume level (dB/10), sidetone volume level 
+(dB/10), sidetone frequency (Hz), and switches for enabling analog inputs, hardware audio output, 
+and swapping the paddles.
 
-The gear icon opens a more detailed configuration for the selected keyer.
+Each displayed numeric value can be manipulated by clicking on the value and clicking on the spinner
+buttons, using the cursor up/down keys, or by editing the displayed number.
 
-Hasak-js may also present a simulated keyer to allow you to check it out without
-keyer hardware.
+Keyboard traversal via Tab and Shift-Tab allows you to move between displayed values.  A space will
+toggle the value of a switch.
 
-## detailed configuration
-The detailed configuration is structured as tree of cards which are organized to
-expose the most useful details.
