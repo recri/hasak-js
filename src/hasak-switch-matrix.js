@@ -37,7 +37,7 @@ export class HasakSwitchMatrix extends LitElement {
     const renderKey = (key, rowIndex, columnIndex) =>
 	  html`
 	    <div style="grid-area: ${2+rowIndex} / ${2+columnIndex} / auto / auto;">
-	      <hasak-switch .device=${device} key="${key}" nolabel>
+	      <hasak-switch .device=${device} key="${key}">
 	      </hasak-switch>
 	    </div>`;
     const renderRow = (row, rowIndex) =>

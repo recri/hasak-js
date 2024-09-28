@@ -18,7 +18,9 @@ export class HasakSwitch extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    this.device.nrpnListen(this.props.value, this.itemListener);
+    const nrpn = this.props.value;
+    this.device.nrpnQuery(nrpn);
+    this.device.nrpnListen(nrpn, this.itemListener);
   }
 
   disconnectedCallback() {

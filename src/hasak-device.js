@@ -81,15 +81,16 @@ export class HasakDevice extends LitElement {
 
   onmidimessage(msg) {
     // console.log(`onmidimessage(${msg[0]}, ${msg[1]}, ${msg[2]})`)
+    this.counts.midimessage += 1;
     const [cmd] = msg;
     if (cmd === SYS_EX) {
+      this.counts.sysex += 1;
       console.log(`SYS_EX ${msg.length} bytes msg[1] = ${msg[1]}, msg[2] = ${msg[2]}`);
     } else {
       const [, msg1, msg2] = msg;
       /* eslint-disable no-bitwise */
       const chan = 1 + (cmd & 0xf);
-      if (!this.channels[chan]) this.channels[chan] = 0;
-      this.channels[chan] += 1;
+      this.counts.channels[chan-1] += 1;
       this.channel = chan;
       switch (cmd & 0xf0) {
         /* eslint-enable no-bitwise */
@@ -99,6 +100,7 @@ export class HasakDevice extends LitElement {
           const oldvelocity = this.notes[note];
           this.notes[note] = velocity;
           this.noteInvokeListeners(note, oldvelocity);
+	  this.counts.notes[note] += 1;
           break;
         }
         case NOTE_OFF: {
@@ -107,6 +109,7 @@ export class HasakDevice extends LitElement {
           const oldvelocity = this.notes[note];
           this.notes[note] = 0;
           this.noteInvokeListeners(note, oldvelocity);
+	  this.counts.notes[note] += 1;
           break;
         }
         case CTRL_CHANGE: {
@@ -116,6 +119,7 @@ export class HasakDevice extends LitElement {
           const olddata = this.ctrls[ctrl];
           this.ctrlInvokeListeners(ctrl, olddata);
           this.ctrls[ctrl] = data;
+	  this.counts.ctrls[ctrl] += 1;
           if (ctrl === DATA_LSB) {
             /* eslint-disable no-bitwise */
             const nrpn = (this.ctrls[NRPN_MSB] << 7) | this.ctrls[NRPN_LSB];
@@ -127,6 +131,10 @@ export class HasakDevice extends LitElement {
             this.nrpns[nrpn] = nrpnData;
             /* eslint-enable no-bitwise */
             this.nrpnInvokeListeners(nrpn, oldNrpnData);
+	    if (this.counts.nrpns[nrpn])
+	      this.counts.nrpns[nrpn] += 1;
+	    else
+	      this.counts.nrpns[nrpn] = 1;
           }
           break;
         }
@@ -266,34 +274,6 @@ export class HasakDevice extends LitElement {
   }
 
   //
-  // get the props key for type and tindex
-  //
-  msgKey(ptype, pvalue) {
-    if (this.props) {
-      const [key] = Object.keys(this.props).filter(
-        fkey =>
-          this.props[fkey].type === ptype && this.props[fkey].value === pvalue,
-      );
-      if (key) return key;
-    }
-    return `${ptype}[${pvalue}]`;
-  }
-
-  msgString(type, tindex, oldval) {
-    const key = this.msgKey(type, tindex);
-    switch (type) {
-      case 'note':
-        return `${key} old=${oldval} new=${this.noteGet(tindex)}`;
-      case 'ctrl':
-        return `${key} old=${oldval} new=${this.ctrlGet(tindex)}`;
-      case 'nrpn':
-        return `${key} old=${oldval} new=${this.nrpnGet(tindex)}`;
-      default:
-        return `${type}[${tindex} old=${oldval}`;
-    }
-  }
-
-  //
   // device management implementation
   // when we open a device we try to get a JSON string
   //
@@ -301,7 +281,6 @@ export class HasakDevice extends LitElement {
     // console.log(`**deviceListener(${type}, ${tindex}, ${oldval})`);
     switch (type) {
       case 'note':
-        // console.log(`*deviceListener(${this.msgString(type, tindex, oldval)})`);
         break;
       case 'ctrl':
         switch (tindex) {
@@ -311,7 +290,6 @@ export class HasakDevice extends LitElement {
           case NRPN_MSB:
             break;
           default:
-            // console.log(`*deviceListener(${this.msgString(type, tindex, oldval)})`);
             break;
         }
         break;
@@ -401,7 +379,6 @@ export class HasakDevice extends LitElement {
             break;
           }
           default:
-            // console.log(`*deviceListener(${this.msgString(type, tindex, oldval)})`);
             break;
         }
         break;
@@ -495,14 +472,18 @@ export class HasakDevice extends LitElement {
 
   constructor() {
     super();
-    this.channels = {};
+    this.counts = {			// device statistics
+      midimessage: 0,			// total messages
+      sysex: 0,				// total system exclusives (ignored)
+      channels: Array(16).fill(0),	// messages to channels counts
+      notes: Array(127).fill(0),	// note messages count
+      ctrls: Array(127).fill(0),	// ctrl messages count
+      nrpns: []				// nrpn messages count
+    };
     this.channel = 10;
     this.notes = {}; // note state map
     this.ctrls = {}; // control change state map
     this.nrpns = {}; // nrpn state map
-    this.noteCounts = {};	// note statistics
-    this.ctrlCounts = {};	// control change statistics
-    this.nrpnCounts = {};	// nrpn statistics
     this.allNoteListeners = [];
     this.allCtrlListeners = [];
     this.allNrpnListeners = [];
@@ -512,16 +493,19 @@ export class HasakDevice extends LitElement {
     this._props = null;
     this.otherSelected = [ 'device-info' ];
     this.otherViews = [
-      "device-info", "midi-stats", "midi-notes", "midi-ctrls", "midi-nrpns"
+      "device-info", /* "midi-stats", "midi-notes", "midi-ctrls", "midi-nrpns" */
     ];
     this.hasakSelected = [ 'minimum' ];
     this.hasakViews = [ 
-      "minimum", "paddle", "fist", "envelope", "ptt", "levels", "enables", "misc",
-      "pinput", "poutput", "padcmap",
+      "device-info", 
+      "minimum", "paddle", "fist", "envelope", "ptt", "levels",
       "mixens", "mixers",
-      "wm8960",
+      "enables",
+      /* "misc",
+      "pinput", "poutput", "padcmap",
+      "wm8960", */
       /* "statistics", */
-      "device-info", "midi-stats", "midi-notes", "midi-ctrls", "midi-nrpns"
+      /* "midi-stats", "midi-notes", "midi-ctrls", "midi-nrpns" */
     ];
     this.selected = this.otherSelected;
     this.views = this.otherViews;
@@ -571,6 +555,7 @@ export class HasakDevice extends LitElement {
 	  html`
 	    <hasak-view 
 	      .device=${this} 
+	      .props=${this.props}
 	      view="${view}" 
 	      class="view ${this.selected.includes(view) ? 'shown' : 'hidden'}">
 	    </hasak-view>`

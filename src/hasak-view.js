@@ -20,6 +20,7 @@ export class HasakView extends LitElement {
     return {
       device: { type: Object }, // parent device
       view: { type: String }, // raw, complete, ...
+      props: { type: Object  },
     };
   }
 
@@ -40,9 +41,9 @@ export class HasakView extends LitElement {
   render() {
     // console.log(`hasak-view render ${this.device.name}, ${this.view}] in render with props ${this.device.props}`);
     if (!this.device) return html`hasak ?device? ${this.view}`;
-    if (!this.device.props) return html`${this.device.name} ${this.view}`;
+    if (!this.props) return html`${this.device.name} ${this.view}`;
     switch (this.view) {
-    case 'minimum':
+    case 'minimum': {
       return html`
           <div class="body">
 	    <hr/>
@@ -57,8 +58,9 @@ export class HasakView extends LitElement {
             ></hasak-switches>
           </div>
         `;
+    }
 
-    case 'paddle': // add mode, adapter, swap, automatic spacing
+    case 'paddle': {
       return html`
           <div class="body paddle">
 	    <hr/>
@@ -88,8 +90,9 @@ export class HasakView extends LitElement {
             </hasak-switches>
           </div>
         `;
+    }
 
-    case 'fist':
+    case 'fist': {
       return html`
           <div class="body fist">
 	    <hr/>
@@ -99,6 +102,7 @@ export class HasakView extends LitElement {
             ></hasak-numbers>
           </div>
         `;
+    }
 
     case 'enables': {
       const keys = [
@@ -115,7 +119,7 @@ export class HasakView extends LitElement {
       ];
       keys.forEach(
         key =>
-        this.device.props[key] ||
+        this.props[key] ||
           console.log(`there is no ${key} in properties`),
       );
       return html`
@@ -129,7 +133,7 @@ export class HasakView extends LitElement {
         `;
     }
 
-    case 'envelope':
+    case 'envelope': {
       return html`
           <div class="body envelope">
 	    <hr/>
@@ -152,8 +156,9 @@ export class HasakView extends LitElement {
             </div>
           </div>
         `;
+    }
 
-    case 'ptt':
+    case 'ptt': {
       return html`
           <div class="body ptt">
 	    <hr/>
@@ -173,6 +178,7 @@ export class HasakView extends LitElement {
             ></hasak-switches>
           </div>
         `;
+    }
 
     case 'levels': {
       const commonKeys = [ "NRPN_VOLUME", "NRPN_LEVEL", "NRPN_USB_LEVEL", "NRPN_I2S_LEVEL", ];
@@ -192,10 +198,10 @@ export class HasakView extends LitElement {
             ></hasak-numbers>
           </div>
         `;
-      
     }
       
-    case 'mixens': {/* mixer enables */
+    case 'mixens': {
+      /* mixer enables */
       const columnLabels = ["I2S/USB", "ST", "IQ", "USB/I2S"];
       const rowLabels = ["USB L", "USB R", "I2S L", "I2S R", "HDW L", "HDW R"];
       const matrixKeys = [
@@ -207,7 +213,7 @@ export class HasakView extends LitElement {
 	["NRPN_MIX_EN_HDW_R0", "NRPN_MIX_EN_HDW_R1", "NRPN_MIX_EN_HDW_R2", "NRPN_MIX_EN_HDW_R3"]
       ];
       // console.log("rendering mixer enable matrix");
-      return html`<hasak-value-matrix 
+      return html`<hasak-switch-matrix 
 		    .device=${this.device} 
 		    xtitle="mixer enable matrix"
 		    .columns=${columnLabels}
@@ -216,7 +222,8 @@ export class HasakView extends LitElement {
 		  </hasak-value-matrix>`;
     }
 
-    case 'mixers': {/* mixer levels */
+    case 'mixers': {
+      /* mixer levels */
       const columnLabels = ["I2S/USB", "ST", "IQ", "USB/I2S"];
       const rowLabels = ["USB L", "USB R", "I2S L", "I2S R", "HDW L", "HDW R"];
       const matrixKeys = [
@@ -236,7 +243,39 @@ export class HasakView extends LitElement {
 		    .matrix=${matrixKeys}>
 		  </hasak-value-matrix>`;
     }
+
+    case 'device-info': {
+      if (this.props) {
+	const deviceInfoKeys = [
+	  "NRPN_ID_DEVICE", "NRPN_ID_VERSION", "NRPN_NRPN_SIZE", "NRPN_MSG_SIZE", "NRPN_SAMPLE_RATE", "NRPN_EEPROM_LENGTH", "NRPN_ID_CPU", "NRPN_ID_CODEC"
+	];
+	return html`
+	  <hr/>
+	  <div class="body">
+	    <hasak-titled-values .device=${this.device} .keys=${deviceInfoKeys}></hasak-titled-values>
+	  </div>
+	`;
+      }
+      return html`
+	<hr/>
+	<div class="body device-info"><p>no device info available for ${this.device.name}</div>`;
+    }
+      
+    default:
+      return html`
+	  <hr/>
+	  <div class="body ${this.view}">
+	    <span>hasak-view - ${this.device.name} - ${this.view} - not done</span>
+	  </div>
+        `;
+    }
+  }
+}
+
+customElements.define('hasak-view', HasakView);
+
 /* problem with statistics is that reading the values changes the values 
+   need some way to isolate them
     case 'statistics': {
       const keys = [
         'NRPN_MIDI_INPUTS',
@@ -265,35 +304,28 @@ export class HasakView extends LitElement {
         `;
     }
 */
-    case 'device-info':
-      if (this.device.props) {
-	const keys = [
-	  "NRPN_ID_DEVICE", "NRPN_ID_VERSION", "NRPN_NRPN_SIZE", "NRPN_MSG_SIZE", "NRPN_SAMPLE_RATE", "NRPN_EEPROM_LENGTH", "NRPN_ID_CPU", "NRPN_ID_CODEC"
-	];
-	return html`
-	  <div class="body">
-	    <hasak-titled-values .device=${this.device} .keys=${keys}></hasak-titled-values>
+/* these don't work because they don't update on changes
+   need a local device key that works like the NRPN_* keys
+    case 'midi-stats':
+      return html`
+	  <hr/>
+          <div class="body midi-stats">
+	    <div>${this.device.counts.midimessage} messages total</div>
+	    <div>${this.device.counts.sysex} system exclusives</div>
+	    ${this.device.counts.channels.map((count, index) => 
+		count ? html`<div>${count} messages on channel ${index+1}</div>` : html``)}
+	    ${this.device.counts.notes.map((count, index) =>
+		count ? html`<div>${count} note ${index} messages </div>` : html``)}
+	    ${this.device.counts.ctrls.map((count, index) =>
+		count ? html`<div>${count} ctrl ${index} messages </div>` : html``)}
+	    ${this.device.counts.nrpns.map((count, index) =>
+		count ? html`<div>${count} nrpn ${index} messages </div>` : html``)}
 	  </div>
 	`;
-      }
-      return html`<div><p>no device info available for ${this.device.name}</div>`;
-      
-    case 'midi-stats':
     case 'midi-notes':
     case 'midi-ctrls':
     case 'midi-nrpns':
-    default:
-      return html`
-	  <div class="body ${this.view}">
-	    <hr/>
-	    <span>hasak-view - ${this.device.name} - ${this.view} - not done</span>
-	  </div>
-        `;
-    }
-  }
-}
-
-customElements.define('hasak-view', HasakView);
+*/    
 
 // Local Variables:
 // mode: JavaScript

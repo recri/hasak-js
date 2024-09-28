@@ -206,7 +206,7 @@ export class HasakJs extends LitElement {
 
       .app-bar {
 	 display: flex;
-	 flex-flow: row wrap;
+	 flex-flow: row nowrap;
       }
 
       .app-footer {
@@ -244,11 +244,11 @@ export class HasakJs extends LitElement {
             <img
               src="/assets/app-icons/keyer-logo-512x128.svg"
               alt="A keyer icon"
-              style="width:96px;height:24px"
+              style="width:256px;height:64px"
             />
 	  </div>
 	  <sl-divider vertical></sl-divider>
-	  <div>
+	  <div style="font-size: larger;">
             hasak
 	  </div>
 	  <sl-divider vertical></sl-divider>
