@@ -175,20 +175,20 @@ export class HasakView extends LitElement {
         `;
 
     case 'levels': {
-      const common_keys = [ "NRPN_VOLUME", "NRPN_LEVEL", "NRPN_USB_LEVEL", "NRPN_I2S_LEVEL", ];
-      const misc_keys = [ "NRPN_HDW_LEVEL", "NRPN_ST_BALANCE", "NRPN_RX_PTT_LEVEL", ];
-      const codec_keys = [ "NRPN_CODEC_VOLUME", "NRPN_INPUT_LEVEL", ];
+      const commonKeys = [ "NRPN_VOLUME", "NRPN_LEVEL", "NRPN_USB_LEVEL", "NRPN_I2S_LEVEL", ];
+      const miscKeys = [ "NRPN_HDW_LEVEL", "NRPN_ST_BALANCE", "NRPN_RX_PTT_LEVEL", ];
+      // const codecKeys = [ "NRPN_CODEC_VOLUME", "NRPN_INPUT_LEVEL", ];
       return html`
           <div class="body">
 	    <hr/>
             <hasak-numbers
               .device=${this.device}
-              .keys=${common_keys}
+              .keys=${commonKeys}
             ></hasak-numbers>
 	    <sl-divider></sl-divider>
             <hasak-numbers
               .device=${this.device}
-              .keys=${misc_keys}
+              .keys=${miscKeys}
             ></hasak-numbers>
           </div>
         `;

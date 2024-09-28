@@ -343,7 +343,7 @@ export class HasakDevice extends LitElement {
                 this.props = hasakProperties100;
               } else {
                 // don't know what this means
-                console.log('what NRPN_ID_DEVICE is ${this.nrpnGet(NRPN_ID_DEVICE)}?');
+                console.log(`what NRPN_ID_DEVICE is ${this.nrpnGet(NRPN_ID_DEVICE)}?`);
               }
 	      if (this.props) {
 		this.selected = this.hasakSelected;

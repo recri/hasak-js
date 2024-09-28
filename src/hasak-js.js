@@ -57,24 +57,20 @@ export class HasakJs extends LitElement {
     return this.midiAccess.outputs.get(this.outputMap[name]);
   }
 
-  propsOf(type, name, dev) {
-    for (const prop in dev) {
-      console.log(`${type} ${name} has prop ${prop} value '${dev[prop]}'`);
-    }
-  }
-
-  // take given name from midi api and simplify
-  simplify(name) {
-    const m = name.match(/^(.*) MIDI \d+$/) || 
-	  name.match(/^(.*) Port-\d+$/);
-    if (m) return m[1];
-    return name;
-  }
     
   // take given name and id from midi api and uniquify
   uniquify(name, id, index) {
+
+    // take given name from midi api and simplify
+    const simplify = (n) => {
+      const m = n.match(/^(.*) MIDI \d+$/) || 
+	    n.match(/^(.*) Port-\d+$/);
+      if (m) return m[1];
+      return n;
+    }
+
     if (this.idMap[id]) return this.idMap[id];
-    const newname = this.simplify(name) + ':' + index;
+    const newname = `${simplify(name)}:${index}`;
     this.idMap[id] = newname;
     return newname;
   }
@@ -124,15 +120,15 @@ export class HasakJs extends LitElement {
     this.inputMap = {};
     this.outputMap = {};
     this.inputs.forEach((inp, inpIndex) => {
-      // this.propsOf('input', inp.name, inp);
       const name = this.recordInput(inp.name, inp.id, inpIndex);
       // console.log(`input rebind ${inp.name} to ${name}`);
       /* eslint-disable no-param-reassign */
       inp.onmidimessage = e => this.onmidimessage(name, e);
     });
     this.outputs.forEach((output, outputIndex) =>  {
-      // this.propsOf('output', output.name, output);
+      /* eslint-disable no-unused-vars */
       const name = this.recordOutput(output.name, output.id, outputIndex);
+      /* eslint-enable no-unused-vars */
       // console.log(`output rebind ${output.name} to ${name}`);
     });
     this.requestUpdate();
