@@ -35,7 +35,10 @@ export class HasakValue extends LitElement {
     const { value, title } = this.device.props[this.key];
     const nrpn = value;
     if ( ! nrpn ) { console.log(`hasak-value no value for ${key}`); return html``; }
-    const nrpnValue = this.device.nrpnGet(nrpn);
+    let nrpnValue = this.device.nrpnGet(nrpn);
+    /* eslint-disable no-bitwise */
+    if (key === 'NRPN_ID_CODEC') nrpnValue &= 0x3fff;
+    /* eslint-enable no-bitwise */
     // console.log(`hasak-value ${this.device.name} key=${key} nrpn=${value} title=${title} value=${nrpnValue}`);
     return html`<div class="value" title="${title}">${nrpnValue}</div>`;
   }

@@ -10,6 +10,7 @@ import './hasak-switches.js';
 import './hasak-titled-values.js';
 import './hasak-value.js';
 import './hasak-value-matrix.js';
+import './hasak-switch-matrix.js';
 
 import '@shoelace-style/shoelace/dist/components/divider/divider.js';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
@@ -173,6 +174,27 @@ export class HasakView extends LitElement {
           </div>
         `;
 
+    case 'levels': {
+      const common_keys = [ "NRPN_VOLUME", "NRPN_LEVEL", "NRPN_USB_LEVEL", "NRPN_I2S_LEVEL", ];
+      const misc_keys = [ "NRPN_HDW_LEVEL", "NRPN_ST_BALANCE", "NRPN_RX_PTT_LEVEL", ];
+      const codec_keys = [ "NRPN_CODEC_VOLUME", "NRPN_INPUT_LEVEL", ];
+      return html`
+          <div class="body">
+	    <hr/>
+            <hasak-numbers
+              .device=${this.device}
+              .keys=${common_keys}
+            ></hasak-numbers>
+	    <sl-divider></sl-divider>
+            <hasak-numbers
+              .device=${this.device}
+              .keys=${misc_keys}
+            ></hasak-numbers>
+          </div>
+        `;
+      
+    }
+      
     case 'mixens': {/* mixer enables */
       const columnLabels = ["I2S/USB", "ST", "IQ", "USB/I2S"];
       const rowLabels = ["USB L", "USB R", "I2S L", "I2S R", "HDW L", "HDW R"];
@@ -214,6 +236,7 @@ export class HasakView extends LitElement {
 		    .matrix=${matrixKeys}>
 		  </hasak-value-matrix>`;
     }
+/* problem with statistics is that reading the values changes the values 
     case 'statistics': {
       const keys = [
         'NRPN_MIDI_INPUTS',
@@ -229,14 +252,10 @@ export class HasakView extends LitElement {
         'NRPN_LISTENER_FIRES',
         'NRPN_LISTENER_LOOPS',
       ];
-      const statistics = key => html`
-          <hasak-value key="${key}" .device=${this.device}></hasak-value>
-        `;
       // this.device.nrpn_query_list(keys);
       return html`
           <div class="body statistics">
-	    <hr/>
-            <div class="flexrow">${keys.map(key => statistics(key))}</div>
+	    <hasak-titled-values .keys=${keys} .device=${this.device}></hasak-titled-values>
             <sl-button style="margins: auto;"
               @click=${this.device.nrpnSetFromKey('NRPN_STATS_RESET', 0)}
             >
@@ -245,11 +264,11 @@ export class HasakView extends LitElement {
           </div>
         `;
     }
-
+*/
     case 'device-info':
       if (this.device.props) {
 	const keys = [
-	  "NRPN_NRPN_SIZE", "NRPN_MSG_SIZE", "NRPN_SAMPLE_RATE", "NRPN_EEPROM_LENGTH", "NRPN_ID_CPU", "NRPN_ID_CODEC"
+	  "NRPN_ID_DEVICE", "NRPN_ID_VERSION", "NRPN_NRPN_SIZE", "NRPN_MSG_SIZE", "NRPN_SAMPLE_RATE", "NRPN_EEPROM_LENGTH", "NRPN_ID_CPU", "NRPN_ID_CODEC"
 	];
 	return html`
 	  <div class="body">
@@ -257,7 +276,7 @@ export class HasakView extends LitElement {
 	  </div>
 	`;
       }
-      return html`<div><p>no device info for ${this.device.name}</div>`;
+      return html`<div><p>no device info available for ${this.device.name}</div>`;
       
     case 'midi-stats':
     case 'midi-notes':
@@ -267,7 +286,7 @@ export class HasakView extends LitElement {
       return html`
 	  <div class="body ${this.view}">
 	    <hr/>
-	    <span>hasak-view - ${this.device.name} - ${this.view}</span>
+	    <span>hasak-view - ${this.device.name} - ${this.view} - not done</span>
 	  </div>
         `;
     }

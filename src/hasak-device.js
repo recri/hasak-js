@@ -83,9 +83,7 @@ export class HasakDevice extends LitElement {
     // console.log(`onmidimessage(${msg[0]}, ${msg[1]}, ${msg[2]})`)
     const [cmd] = msg;
     if (cmd === SYS_EX) {
-      console.log(
-        `SYS_EX ${msg.length} bytes msg[1] = ${msg[1]}, msg[2] = ${msg[2]}`,
-      );
+      console.log(`SYS_EX ${msg.length} bytes msg[1] = ${msg[1]}, msg[2] = ${msg[2]}`);
     } else {
       const [, msg1, msg2] = msg;
       /* eslint-disable no-bitwise */
@@ -133,9 +131,7 @@ export class HasakDevice extends LitElement {
           break;
         }
         default:
-          console.log(
-            `HasakDevice: uncaught message ${msg[0]} ${msg[1]} ${msg[2]}}`,
-          );
+          console.log(`HasakDevice: uncaught message ${msg[0]} ${msg[1]} ${msg[2]}}`);
           break;
       }
     }
@@ -322,13 +318,13 @@ export class HasakDevice extends LitElement {
       case 'nrpn':
         switch (tindex) {
           case NRPN_ID_DEVICE:
-            console.log(`ID_DEVICE === ${this.nrpnGet(NRPN_ID_DEVICE)}`);
+            // console.log(`ID_DEVICE === ${this.nrpnGet(NRPN_ID_DEVICE)}`);
             break;
           case NRPN_ID_VERSION:
-            console.log(`ID_VERSION === ${this.nrpnGet(NRPN_ID_VERSION)}`);
+            // console.log(`ID_VERSION === ${this.nrpnGet(NRPN_ID_VERSION)}`);
             if (this.nrpnGet(NRPN_ID_DEVICE) === VAL_HASAK_ID_DEVICE) {
               if (this.nrpnGet(NRPN_ID_DEVICE) >= VAL_HASAK2_ID_VERSION) {
-                console.log('fetching local copy of props v110');
+                // console.log('fetching local copy of props v110');
                 this.props = hasakProperties110;
                 // if ( ! this.request_json) {
                 // this.request_json = true;
@@ -343,11 +339,11 @@ export class HasakDevice extends LitElement {
                 // }
               } else if (this.nrpnGet(NRPN_ID_DEVICE) >= VAL_HASAK1_ID_VERSION) {
                 // pull props from canned image
-                console.log('fetching local copy of props v100');
+                // console.log('fetching local copy of props v100');
                 this.props = hasakProperties100;
               } else {
                 // don't know what this means
-                console.log('what?');
+                console.log('what NRPN_ID_DEVICE is ${this.nrpnGet(NRPN_ID_DEVICE)}?');
               }
 	      if (this.props) {
 		this.selected = this.hasakSelected;
@@ -442,8 +438,8 @@ export class HasakDevice extends LitElement {
     this.nrpnListen('*', (type, tindex, oldvalue) =>
       this.deviceListener(type, tindex, oldvalue),
     );
-    this.nrpnSet(NRPN_ID_DEVICE, 0);
-    this.nrpnSet(NRPN_ID_VERSION, 0);
+    this.nrpnQuery(NRPN_ID_DEVICE);
+    this.nrpnQuery(NRPN_ID_VERSION);
   }
 
   get props() {
@@ -451,7 +447,7 @@ export class HasakDevice extends LitElement {
   }
 
   set props(p) {
-    console.log(`set props(${p})`);
+    // console.log(`set props(${p})`);
     this._props = p;
     this.requestUpdate();
   }
@@ -520,9 +516,12 @@ export class HasakDevice extends LitElement {
     ];
     this.hasakSelected = [ 'minimum' ];
     this.hasakViews = [ 
-      "minimum", "paddle", "fist", "envelope", "enables", "ptt", "levels",
-      "misc", "pinput", "poutput", "padcmap", "mixens", "mixers", "wm8960",
-      "statistics", "device-info", "midi-stats", "midi-notes", "midi-ctrls", "midi-nrpns"
+      "minimum", "paddle", "fist", "envelope", "ptt", "levels", "enables", "misc",
+      "pinput", "poutput", "padcmap",
+      "mixens", "mixers",
+      "wm8960",
+      /* "statistics", */
+      "device-info", "midi-stats", "midi-notes", "midi-ctrls", "midi-nrpns"
     ];
     this.selected = this.otherSelected;
     this.views = this.otherViews;

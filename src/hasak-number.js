@@ -41,7 +41,7 @@ export class HasakNumber extends LitElement {
   }
 
   onInput(e) {
-    console.log(`onInput e.target.input.value = ${e.target.input.value}`);
+    // console.log(`onInput e.target.input.value = ${e.target.input.value}`);
     this.targetOnInput(e.target);
   }
 

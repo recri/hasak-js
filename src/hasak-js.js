@@ -57,16 +57,42 @@ export class HasakJs extends LitElement {
     return this.midiAccess.outputs.get(this.outputMap[name]);
   }
 
-  recordOutput(name, id) {
-    if (!this.outputMap[name]) this.outputMap[name] = id;
-    if (!this.dev[name]) this.dev[name] = null;
-    return name;
+  propsOf(type, name, dev) {
+    for (const prop in dev) {
+      console.log(`${type} ${name} has prop ${prop} value '${dev[prop]}'`);
+    }
   }
 
-  recordInput(name, id) {
-    if (!this.inputMap[name]) this.inputMap[name] = id;
-    if (!this.dev[name]) this.dev[name] = null;
+  // take given name from midi api and simplify
+  simplify(name) {
+    const m = name.match(/^(.*) MIDI \d+$/) || 
+	  name.match(/^(.*) Port-\d+$/);
+    if (m) return m[1];
     return name;
+  }
+    
+  // take given name and id from midi api and uniquify
+  uniquify(name, id, index) {
+    if (this.idMap[id]) return this.idMap[id];
+    const newname = this.simplify(name) + ':' + index;
+    this.idMap[id] = newname;
+    return newname;
+  }
+  
+  recordOutput(name, id, index) {
+    const newname = this.uniquify(name, id, index);
+    if (!this.outputMap[newname]) this.outputMap[newname] = id;
+    if (!this.dev[newname]) this.dev[newname] = null;
+    // console.log(`recordOutput(name="${name}", id="${id}") mapped to "${newname}"`);
+    return newname;
+  }
+
+  recordInput(name, id, index) {
+    const newname = this.uniquify(name, id, index);
+    if (!this.inputMap[newname]) this.inputMap[newname] = id;
+    if (!this.dev[newname]) this.dev[newname] = null;
+    // console.log(`recordInput(name="${name}", id="${id}") mapped to "${newname}"`);
+    return newname; 
   }
 
   get names() {
@@ -93,16 +119,22 @@ export class HasakJs extends LitElement {
   
   rebind() {
     // console.log("hasak-js rebind()");
+    this.idMap = {}
+    this.nameMap = {};
     this.inputMap = {};
     this.outputMap = {};
-    this.inputs.forEach(inp => {
-      const name = this.recordInput(inp.name, inp.id);
-      // console.log(`rebind ${input.name} to ${name}`);
+    this.inputs.forEach((inp, inpIndex) => {
+      // this.propsOf('input', inp.name, inp);
+      const name = this.recordInput(inp.name, inp.id, inpIndex);
+      // console.log(`input rebind ${inp.name} to ${name}`);
       /* eslint-disable no-param-reassign */
       inp.onmidimessage = e => this.onmidimessage(name, e);
     });
-    this.outputs.forEach(output => 
-      this.recordOutput(output.name, output.id));
+    this.outputs.forEach((output, outputIndex) =>  {
+      // this.propsOf('output', output.name, output);
+      const name = this.recordOutput(output.name, output.id, outputIndex);
+      // console.log(`output rebind ${output.name} to ${name}`);
+    });
     this.requestUpdate();
   }
 
@@ -149,7 +181,7 @@ export class HasakJs extends LitElement {
     this.selectedValue = e.target.value;
     this.selectedName = this.names[this.selectedValue];
     this.requestUpdate();
-    console.log(`selectedValue ${this.selectedValue} is ${this.names[this.selectedValue]}`)
+    // console.log(`selectedValue ${this.selectedValue} is ${this.names[this.selectedValue]}`)
   }
 
   static get styles() {

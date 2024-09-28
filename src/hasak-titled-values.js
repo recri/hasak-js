@@ -20,6 +20,7 @@ export class HasakTitledValues extends LitElement {
     `;
   }
 
+/*
   itemListener = () => this.requestUpdate();
 
   connectedCallback() {
@@ -36,7 +37,7 @@ export class HasakTitledValues extends LitElement {
       this.device.nrpnUnlisten(this.device.getValue(key), this.itemListener),
     );
   }
-
+*/
   render() {
     // console.log(`hasak-titled-values ${this.keys} ${this.device.name}`);
     return html`
