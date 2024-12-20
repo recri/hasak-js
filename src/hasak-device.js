@@ -557,7 +557,7 @@ export class HasakDevice extends LitElement {
 	      .device=${this} 
 	      .props=${this.props}
 	      view="${view}" 
-	      class="view ${this.selected.includes(view) ? 'shown' : 'hidden'}">
+	    class="view ${view} ${this.selected.includes(view) ? 'shown' : 'hidden'}">
 	    </hasak-view>`
 	  )}
       `;
