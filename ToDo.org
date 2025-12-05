@@ -1,0 +1,11 @@
+[ ] fix the missing elements of the mixer matrix
+[ ] make device selection the default panel
+[ ] put panel selection into the hamburger menu
+[ ] implement serial connection
+[ ] move text based stuff to serial
+    maybe keep the 
+[ ] have hasak keyer provide json descriptor over serial
+[ ] rewrite descriptor
+[ ] hybrid command stream is tacky.  Maybe the serial operations
+    become a kind of mirroring between hasak-js and hasak-ino?
+    

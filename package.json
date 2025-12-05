@@ -17,8 +17,9 @@
     "start": "web-dev-server"
   },
   "dependencies": {
-    "@shoelace-style/shoelace": "^2.16.0",
-    "@xterm/xterm": "^5.5.0",
+    "@shoelace-style/shoelace": "^2.20.0",
+    "@xterm/xterm": "^5.6.0-beta.96",
+    "web-serial-polyfill": "^1.0.15",
     "lit": "^3.1.4"
   },
   "devDependencies": {

@@ -13,6 +13,11 @@ import { LitElement, html, css } from 'lit';
 import '@shoelace-style/shoelace/dist/components/divider/divider.js';
 import '@shoelace-style/shoelace/dist/components/select/select.js';
 import '@shoelace-style/shoelace/dist/components/option/option.js';
+import '@shoelace-style/shoelace/dist/components/dropdown/dropdown.js';
+import '@shoelace-style/shoelace/dist/components/icon-button/icon-button.js';
+// import '@shoelace-style/shoelace/dist/components/button/button.js';
+import '@shoelace-style/shoelace/dist/components/menu/menu.js';
+import '@shoelace-style/shoelace/dist/components/menu-item/menu-item.js';
 
 import './hasak-device.js';
 
@@ -28,6 +33,8 @@ export class HasakJs extends LitElement {
 
   constructor() {
     super();
+    this.serialAvailable = 'serial' in navigator;
+    // this.audioAvailable = 
     this.midiAvailable = false;
     this.midiAccess = null; // global MIDIAccess object
     this.dev = {};
@@ -241,10 +248,28 @@ export class HasakJs extends LitElement {
         <sl-divider></sl-divider>
         <div class="app-bar">
 	  <div>
+          <sl-dropdown>
+            <sl-icon-button slot="trigger" name="list" caret></sl-icon-button>
+            <sl-menu>
+              ${this.names.map(name => 
+                html`
+                  <sl-menu-item 
+                    type="checkbox" 
+                    value="${this.valueOfName(name)}"
+		    @sl-click=${this.onMenuItemClick}>
+		      ${name}
+		  </sl-menu-item>
+                `
+              )}
+            </sl-menu>
+          </sl-dropdown>
+          </div>	  
+	  <sl-divider vertical></sl-divider>
+	  <div>
             <img
               src="/assets/app-icons/keyer-logo-512x128.svg"
               alt="A keyer icon"
-              style="width:256px;height:64px"
+              style="width:128px;height:64px"
             />
 	  </div>
 	  <sl-divider vertical></sl-divider>
