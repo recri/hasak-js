@@ -1,10 +1,11 @@
 //
-// hasak-js - a progressive web app for morse code
+// hasak-device - a progressive web app for morse code
 // Copyright (c) 2022 Roger E Critchlow Jr, Charlestown, MA, USA
+// Copyright (c) 2025 Roger E Critchlow Jr, Las Cruces, NM, USA
 //
 // MIT License
 //
-// Copyright (c) 2022 hasak-js
+// Copyright (c) 2022, 2025 hasak-device
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
